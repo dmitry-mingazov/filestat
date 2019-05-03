@@ -1,0 +1,69 @@
+_filestat.c
+  main(argc, argv): int
+
+_filestatConf.c
+  get_config(argc, argv): s_filestat_configuration
+  - get_input_file_args(char* input_file_name): s_input_file_argument*
+
+_analyzer.c
+  analyze(filestat_configuration): s_file_path*
+  -
+
+_output.c
+  file_output(s_file_path*): void
+  standard_output(s_file_path*): void
+
+_log.c
+  log(something): void
+  history_of(char*): s_file_path
+
+
+structs:
+  s_filestat_configuration;
+    verbose: bool
+    stat: bool
+    report: bool
+    history: char*
+    user: uid_t
+    group: gid_t
+    length_min: off_t
+    length_max: off_t
+    output_file: char*
+    input_args: s_input_file_argument*
+
+  s_input_file_argument;
+    path: char*
+    recursive: bool
+    follow_link: bool
+    next: s_input_file_argument*
+
+  s_file_path;
+    path: char*
+    files_stat: s_file_stat*
+    next: s_file_path*
+
+  s_file_stat;
+    data: time_t
+    size: off_t
+    mode: mode_t
+    atime: time_t
+    mtime: time_t
+    ctime: time_t
+    nlink: int
+    uid: uid_t
+    gid: gid_t
+    next: s_file_stat*
+
+  s_program_stat;
+    nfile: int
+    nlink: int
+    ndir: int
+    stot: off_t
+    savg: off_t
+    smax: off_t
+    smin: off_t
+
+  s_report;
+    nfile: int
+    etime: int //da rivedere
+    smax: off_t
