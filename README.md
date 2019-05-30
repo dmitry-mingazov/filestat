@@ -10,7 +10,7 @@ Sviluppare una applicazione di sistema Unix/Linux chiamata `filestat` che sia in
 - data ultima modifica dei permessi;
 - numero di link al file;
 - proprietario;
-- gruppo
+- gruppo.
 
 Queste informazioni sono recuperabili usando le funzioni `stat()`, `lstat()` e `fstat()`. 
 
