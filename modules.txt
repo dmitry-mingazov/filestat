@@ -7,7 +7,6 @@ _filestatConf.c
 
 _analyzer.c
   analyze(filestat_configuration): s_file_path*
-  -static funcions
 
 _output.c
   file_output(s_file_path*): void
@@ -30,6 +29,7 @@ structs:
     length_max: off_t
     output_file: char*
     input_args: s_input_file_argument*
+    noscan: bool
 
   s_input_file_argument;
     path: char*
