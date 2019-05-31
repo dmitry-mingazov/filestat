@@ -17,8 +17,8 @@ int getOptions(int argc, char *argv[])
     printf("No arguments\n");
     return 0;
   }
-
-
+  fsconf = malloc(sizeof(struct s_filestat_configuration));
+  fsconf->hasopt = 00;
   int nextOpt;
   int optIndex = 0;
   const char* short_opts = "vsrh:u:g:l:";
@@ -38,34 +38,42 @@ int getOptions(int argc, char *argv[])
       printf("%d ", optind);
       switch (nextOpt) {
         case 'v':
+          fsconf->hasopt |= VERBOSE;
           printf("opt: verbose\n");
           break;
         case 's':
+          fsconf->hasopt |= STAT;
           printf("opt: scan\n");
           break;
         case 'r':
+          fsconf->hasopt |= REPORT;
           printf("opt: report\n");
           break;
         case 'h':
+          fsconf->hasopt |= HISTORY;
           printf("opt: history = %s\n", optarg);
           break;
         case 'u':
+          fsconf->hasopt |= USER;
           printf("opt: user = %s\n", optarg);
           break;
         case 'g':
+          fsconf->hasopt |= GROUP;
           printf("opt: group = %s\n", optarg);
           break;
         case 'l':
+          fsconf->hasopt |= LENGTH;
           printf("opt: length = %s\n", optarg);
           break;
         case 'n':
+          fsconf->hasopt |= NOSCAN;
           printf("opt: noscan\n");
           break;
         default:
           printf("Invalid option\n");
     }
   }
-  printf("-----------\nOptIndex: %d\n", optind);
+  // printf("-----------\nOptIndex: %d\n", optind);
   if(optind < argc){
     // printf("Other ARGV elements\n");
     int i = 0;
@@ -78,6 +86,11 @@ int getOptions(int argc, char *argv[])
       }
     }
   }
+  printf("----------------\n");
+  printf("SIZEOF hasopt: %d\n", sizeof(fsconf->hasopt));
+  printf("hasopt in:\n");
+  char c = fsconf->hasopt;
+  printf("octal: %o\nhex: %x\ndecimal: %d\n", c, c, c);
 
   printf("Finished parsing options\n");
   return 0;
