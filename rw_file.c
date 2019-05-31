@@ -2,5 +2,5 @@
 
 void readInputFile(char *path)
 {
-  printf("\nReading: %s\n", path);
+  printf("\nInput file: %s\n", path);
 }

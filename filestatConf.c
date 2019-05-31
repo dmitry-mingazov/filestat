@@ -19,6 +19,8 @@ int getOptions(int argc, char *argv[])
   }
   fsconf = malloc(sizeof(struct s_filestat_configuration));
   fsconf->hasopt = 00;
+  fsconf->output_file = DEFAULT_OUTPUT_FILE;
+
   int nextOpt;
   int optIndex = 0;
   const char* short_opts = "vsrh:u:g:l:";
@@ -73,6 +75,7 @@ int getOptions(int argc, char *argv[])
           printf("Invalid option\n");
     }
   }
+  printf("-------------\n");
   // printf("-----------\nOptIndex: %d\n", optind);
   if(optind < argc){
     // printf("Other ARGV elements\n");
@@ -82,10 +85,14 @@ int getOptions(int argc, char *argv[])
         readInputFile(argv[optind++]);
       }
       else{
-        printf("Output file: %s", argv[optind++]);
+        fsconf->output_file =argv[optind++];
       }
     }
   }
+  else{
+    readInputFile(DEFAULT_INPUT_FILE);
+  }
+  printf("Output file: %s\n", fsconf->output_file);
   printf("----------------\n");
   printf("SIZEOF hasopt: %d\n", sizeof(fsconf->hasopt));
   printf("hasopt in:\n");
