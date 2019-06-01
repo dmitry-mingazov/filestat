@@ -1,4 +1,18 @@
+CC = gcc
+INCDIR = include
+OBJDIR = obj
+SRCDIR = src
+SRC = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
+DEPS = $(wildcard $(INCDIR)/*.h)
+OUT = filestat
+CCFLAGS = -I ./$(INCDIR) -Wall
 
 
-filestat: filestat.c filestatConf.c rw_file.c
-	gcc -o filestat filestat.c filestatConf.c rw_file.c
+all: $(OUT)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS)
+	$(CC) -c -g -o $@ $< $(CCFLAGS)
+
+$(OUT): $(OBJS)
+	$(CC) -o $@ $^ $(CCFLAGS)
