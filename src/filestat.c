@@ -37,7 +37,7 @@ void filestat(input_file_argument *input_args)
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)
   && ((stbuf.st_mode & S_IFMT) == S_IFDIR )){
-    // dirwalk(input_args, filestat);
+     dirwalk(input_args, filestat);
   }
 
   if((fsconf.hasopt & VERBOSE) == VERBOSE){
@@ -54,7 +54,7 @@ file_info statcpy(struct stat *stbuf)
   time_t rawtime;
   time(&rawtime);
 
-  fsbuf.data = rawtime;
+  fsbuf.date = rawtime;
   fsbuf.size = stbuf->st_size;
   fsbuf.mode = stbuf->st_mode;
   fsbuf.atime = stbuf->st_atime;

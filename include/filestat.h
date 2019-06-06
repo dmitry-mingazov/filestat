@@ -6,7 +6,7 @@
 #include <time.h>
 
 typedef struct s_file_info {
-  time_t data;
+  time_t date;
   off_t size;
   mode_t mode;
   time_t atime;
