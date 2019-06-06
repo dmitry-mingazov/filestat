@@ -52,7 +52,6 @@ structs:
     nlink: int
     uid: uid_t
     gid: gid_t
-    next: s_file_stat*
 
   s_program_stat;
     nfile: int

@@ -24,21 +24,23 @@
 #define DEFAULT_INPUT_FILE "filestat.in"
 #define DEFAULT_OUTPUT_FILE "filestat.db"
 
+
+typedef struct s_input_file_argument {
+  char *path;
+  unsigned char options;
+  struct s_input_file_argument *next;
+} input_file_argument;
+
 typedef struct s_filestat_configuration {
-  char hasopt;
+  unsigned char hasopt;
   char *history;
   uid_t user;
   gid_t group;
   off_t length_min;
   off_t length_max;
   char *output_file;
+  input_file_argument *input_args;
 } filestat_configuration;
-
-typedef struct s_input_file_arguments {
-  char *path;
-  char options;
-  struct s_input_file_arguments *next;
-} input_file_arguments;
 
 void initFilestat(int argc, char *argv[], filestat_configuration *fsconf);
 int getOptions(int argc, char *argv[], filestat_configuration *fsconf);
