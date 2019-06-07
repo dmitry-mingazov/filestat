@@ -18,18 +18,8 @@
 #define GROUP 0100
 #define LENGTH 0200
 
-#define RECURSIVE 01
-#define FOLLOW_LINK 02
-
 #define DEFAULT_INPUT_FILE "filestat.in"
 #define DEFAULT_OUTPUT_FILE "filestat.db"
-
-
-typedef struct s_input_file_argument {
-  char *path;
-  unsigned char options;
-  struct s_input_file_argument *next;
-} input_file_argument;
 
 typedef struct s_filestat_configuration {
   unsigned char hasopt;
@@ -43,7 +33,7 @@ typedef struct s_filestat_configuration {
 } filestat_configuration;
 
 void initFilestat(int argc, char *argv[], filestat_configuration *fsconf);
-int getOptions(int argc, char *argv[], filestat_configuration *fsconf);
+filestat_configuration getOptions(int argc, char *argv[], filestat_configuration *fsconf);
 
 
 #endif

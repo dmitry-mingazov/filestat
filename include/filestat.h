@@ -4,6 +4,7 @@
 #include "filestatConf.h"
 #include <sys/stat.h>
 #include <time.h>
+#include <sys/dir.h>
 
 typedef struct s_file_info {
   time_t date;
@@ -23,5 +24,6 @@ static filestat_configuration fsconf;
 
 void filestat(input_file_argument *input_args);
 file_info statcpy(struct stat *stbuf);
+void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *));
 
 #endif

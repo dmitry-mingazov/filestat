@@ -2,10 +2,19 @@
 
 int main(int argc, char **argv)
 {
+  fsconf = getOptions(argc, argv, &fsconf);
 
-  initFilestat(argc, argv, &fsconf);
+  printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);
 
   input_file_argument *input_args = fsconf.input_args;
+
+
+  if(fsconf.input_args == NULL){
+    printf("FSCONF.input_args NULL\n");
+  }
+  if(input_args == NULL){
+    printf("No input file\n");
+  }
 
   while(input_args != NULL){
     filestat(input_args);
@@ -33,18 +42,45 @@ void filestat(input_file_argument *input_args)
   }
 
   fsbuf = statcpy(&stbuf);
-
+  printf("---filestat: size %ld\n", fsbuf.size);
+  if((fsconf.hasopt & VERBOSE) == VERBOSE){
+    printf("filestat: checked %s\n", input_args->path);
+  }
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)
   && ((stbuf.st_mode & S_IFMT) == S_IFDIR )){
      dirwalk(input_args, filestat);
   }
+}
 
-  if((fsconf.hasopt & VERBOSE) == VERBOSE){
+void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *))
+{
+  // input_file_argument *file_arg;
+  char *dirpath;
+  char *filepath;
+  struct dirent *dp;
+  DIR *dfd;
 
+  dirpath = dir->path;
+  printf("Dirwalk called and dirpath is: %s\n", dirpath);
+
+  if((dfd = opendir(dir->path)) == NULL){
+    fprintf(stderr, "dirwalk: can't open %s\n", dir->path);
+    return;
   }
 
-
+  while((dp = readdir(dfd)) != NULL){
+    printf("dirwalk: reading %s\n", dp->d_name);
+    //ignore itself and its parent
+    if(strcmp(dp->d_name, ".") == 0
+    || strcmp(dp->d_name, "..") == 0)
+      continue;
+    filepath = malloc(sizeof(char) * (strlen(dirpath) + strlen(dp->d_name) + 2));
+    sprintf(filepath, "%s/%s", dirpath, dp->d_name);
+    dir->path=filepath;
+    (*fcn)(dir);
+  }
+  closedir(dfd);
 }
 
 file_info statcpy(struct stat *stbuf)
