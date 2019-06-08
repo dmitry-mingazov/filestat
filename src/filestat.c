@@ -49,12 +49,12 @@ void filestat(input_file_argument *input_args)
   printf("---filestat: permissions %o\n", READABLE_PERMS(fsbuf.mode));
   printf("---filestat: permissions %s\n", perm);
   if((fsconf.hasopt & VERBOSE) == VERBOSE){
-
+	printFstat(fsbuf);
   }
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)
   && (S_ISDIR(fsbuf.mode))){
-     dirwalk(input_args, filestat);
+    dirwalk(input_args, filestat);
   }
 }
 

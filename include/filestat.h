@@ -8,8 +8,6 @@
 
 #include "utils.h"
 
-
-
 typedef struct s_file_info {
   time_t date;
   off_t size;
@@ -22,7 +20,7 @@ typedef struct s_file_info {
   gid_t gid;
 } file_info;
 
-
+#include "print.h"
 
 static filestat_configuration fsconf;
 
