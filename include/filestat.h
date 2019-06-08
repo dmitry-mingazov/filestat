@@ -6,6 +6,10 @@
 #include <time.h>
 #include <sys/dir.h>
 
+#include "utils.h"
+
+
+
 typedef struct s_file_info {
   time_t date;
   off_t size;

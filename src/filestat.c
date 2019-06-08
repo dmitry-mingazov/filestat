@@ -42,13 +42,18 @@ void filestat(input_file_argument *input_args)
   }
 
   fsbuf = statcpy(&stbuf);
+  printf("filestat: checked %s\n", input_args->path);
   printf("---filestat: size %ld\n", fsbuf.size);
+  char perm[10];
+  parse_mode(fsbuf.mode, perm);
+  printf("---filestat: permissions %o\n", READABLE_PERMS(fsbuf.mode));
+  printf("---filestat: permissions %s\n", perm);
   if((fsconf.hasopt & VERBOSE) == VERBOSE){
-    printf("filestat: checked %s\n", input_args->path);
+
   }
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)
-  && ((stbuf.st_mode & S_IFMT) == S_IFDIR )){
+  && (S_ISDIR(fsbuf.mode))){
      dirwalk(input_args, filestat);
   }
 }
