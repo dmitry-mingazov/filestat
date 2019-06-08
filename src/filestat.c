@@ -16,6 +16,8 @@ int main(int argc, char **argv)
     printf("No input file\n");
   }
 
+  init_rbtree();
+
   while(input_args != NULL){
     filestat(input_args);
     input_args = input_args->next;
@@ -54,7 +56,11 @@ void filestat(input_file_argument *input_args)
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)
   && (S_ISDIR(fsbuf.mode))){
-    dirwalk(input_args, filestat);
+    if(add_rbtree(stbuf.st_ino))
+      dirwalk(input_args, filestat);
+    else{
+      printf("LINK FOUND\n\n");
+    }
   }
 }
 

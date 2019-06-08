@@ -7,6 +7,7 @@
 #include <sys/dir.h>
 
 #include "utils.h"
+#include "rbtree.h"
 
 typedef struct s_file_info {
   time_t date;
