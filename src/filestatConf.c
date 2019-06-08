@@ -14,8 +14,8 @@ filestat_configuration getOptions(int argc, char *argv[], filestat_configuration
 {
 
   if(argc < 2){
-    printf("No arguments\n");
-    return ;
+    printf("Need to handle no arguments\n");
+    exit(1);
   }
   fsconf->hasopt = 00;
   fsconf->output_file = DEFAULT_OUTPUT_FILE;
@@ -76,14 +76,14 @@ filestat_configuration getOptions(int argc, char *argv[], filestat_configuration
           printf("Invalid option\n");
     }
   }
-  printf("-------------");
+  printf("-------------\n");
   // printf("-----------\nOptIndex: %d\n", optind);
   if(optind < argc){
     // printf("Other ARGV elements\n");
     int i = 0;
     while(optind < argc && i < 2){
       if(i++ == 0){
-        readInputFile(argv[optind++], fsconf->input_args);
+        fsconf->input_args = readInputFile(argv[optind++]);
       }
       else{
         fsconf->output_file =argv[optind++];
@@ -91,7 +91,7 @@ filestat_configuration getOptions(int argc, char *argv[], filestat_configuration
     }
   }
   else{
-    readInputFile(DEFAULT_INPUT_FILE, fsconf->input_args);
+    fsconf->input_args = readInputFile(DEFAULT_INPUT_FILE);
   }
   printf("Output file: %s\n", fsconf->output_file);
   printf("----------------\n");
@@ -100,6 +100,7 @@ filestat_configuration getOptions(int argc, char *argv[], filestat_configuration
   char c = fsconf->hasopt;
   printf("octal: %o\nhex: %x\ndecimal: %d\n", c, c, c);
 
+  printf("conf: root path -> %s\n", fsconf->input_args->path);
   // printf("Finished parsing options\n");
   return *fsconf;
 }

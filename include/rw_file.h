@@ -2,9 +2,12 @@
 #define RW_FILE
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define RECURSIVE 01
 #define FOLLOW_LINK 02
+
+#define PATH_ARGUMENTS 2
 
 typedef struct s_input_file_argument {
   char *path;
@@ -12,6 +15,6 @@ typedef struct s_input_file_argument {
   struct s_input_file_argument *next;
 } input_file_argument;
 
-void readInputFile(char *path, input_file_argument *input_args);
+input_file_argument *readInputFile(char *path);
 
 #endif

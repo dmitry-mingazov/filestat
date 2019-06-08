@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 
   input_file_argument *input_args = fsconf.input_args;
 
-
+  printf("main: root path -> %s\n", input_args->path);
   if(fsconf.input_args == NULL){
     printf("FSCONF.input_args NULL\n");
   }
@@ -31,12 +31,12 @@ void filestat(input_file_argument *input_args)
 
   if((input_args->options & FOLLOW_LINK) == FOLLOW_LINK){
     if(stat(input_args->path, &stbuf) == -1){
-      fprintf(stderr, "filestat: access denied at %s\n", input_args->path);
+      fprintf(stderr, "filestat: can't access to %s\n", input_args->path);
       return ;
     }
   }else{
     if(lstat(input_args->path, &stbuf) == -1){
-      fprintf(stderr, "filestat: access denied at %s\n", input_args->path);
+      fprintf(stderr, "filestat: can't access to %s\n", input_args->path);
       return ;
     }
   }
@@ -49,7 +49,7 @@ void filestat(input_file_argument *input_args)
   // printf("---filestat: permissions %o\n", READABLE_PERMS(fsbuf.mode));
   // printf("---filestat: permissions %s\n", perm);
   if((fsconf.hasopt & VERBOSE) == VERBOSE){
-	   printFstat(fsbuf);
+	   printFstat(fsbuf, input_args->path);
   }
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)

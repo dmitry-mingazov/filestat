@@ -5,6 +5,6 @@
 #include <time.h>
 #include "filestat.h"
 
-void printFstat(file_info temp_file);
+void printFstat(file_info temp_file, char *filename);
 
 #endif
