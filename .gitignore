@@ -1,3 +1,9 @@
+#Visual Studio Code workspace
+.vscode
+
+#temporary files
+build
+
 # Prerequisites
 *.d
 

@@ -10,17 +10,16 @@ void initFilestat(int argc, char *argv[], filestat_configuration *fsconf)
 }
 
 
-filestat_configuration getOptions(int argc, char *argv[], filestat_configuration *fsconf)
+int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
 {
 
-  if(argc < 2){
-    printf("Need to handle no arguments\n");
-    exit(1);
-  }
-  fsconf->hasopt = 00;
-  fsconf->output_file = DEFAULT_OUTPUT_FILE;
+  // if(argc < 2){
+  //   return 1;
+  // }
+  fsconf[0]->hasopt = 00;
+  fsconf[0]->output_file = DEFAULT_OUTPUT_FILE;
 
-  fsconf->input_args = malloc(sizeof(input_file_argument));
+  fsconf[0]->input_args = malloc(sizeof(input_file_argument));
 
   int nextOpt;
   int optIndex = 0;
@@ -41,66 +40,59 @@ filestat_configuration getOptions(int argc, char *argv[], filestat_configuration
       printf("%d ", optind);
       switch (nextOpt) {
         case 'v':
-          fsconf->hasopt |= VERBOSE;
+          fsconf[0]->hasopt |= VERBOSE;
           printf("opt: verbose\n");
           break;
         case 's':
-          fsconf->hasopt |= STAT;
+          fsconf[0]->hasopt |= STAT;
           printf("opt: scan\n");
           break;
         case 'r':
-          fsconf->hasopt |= REPORT;
+          fsconf[0]->hasopt |= REPORT;
           printf("opt: report\n");
           break;
         case 'h':
-          fsconf->hasopt |= HISTORY;
+          fsconf[0]->hasopt |= HISTORY;
           printf("opt: history = %s\n", optarg);
           break;
         case 'u':
-          fsconf->hasopt |= USER;
+          fsconf[0]->hasopt |= USER;
           printf("opt: user = %s\n", optarg);
           break;
         case 'g':
-          fsconf->hasopt |= GROUP;
+          fsconf[0]->hasopt |= GROUP;
           printf("opt: group = %s\n", optarg);
           break;
         case 'l':
-          fsconf->hasopt |= LENGTH;
+          fsconf[0]->hasopt |= LENGTH;
           printf("opt: length = %s\n", optarg);
           break;
         case 'n':
-          fsconf->hasopt |= NOSCAN;
+          fsconf[0]->hasopt |= NOSCAN;
           printf("opt: noscan\n");
           break;
         default:
           printf("Invalid option\n");
     }
   }
-  printf("-------------\n");
+  // printf("-------------\n");
   // printf("-----------\nOptIndex: %d\n", optind);
   if(optind < argc){
     // printf("Other ARGV elements\n");
     int i = 0;
     while(optind < argc && i < 2){
       if(i++ == 0){
-        fsconf->input_args = readInputFile(argv[optind++]);
+        fsconf[0]->input_args = readInputFile(argv[optind++]);
       }
       else{
-        fsconf->output_file =argv[optind++];
+        fsconf[0]->output_file =argv[optind++];
       }
     }
   }
   else{
-    fsconf->input_args = readInputFile(DEFAULT_INPUT_FILE);
+    fsconf[0]->input_args = readInputFile(DEFAULT_INPUT_FILE);
   }
-  printf("Output file: %s\n", fsconf->output_file);
-  printf("----------------\n");
-  printf("SIZEOF hasopt: %ld\n", sizeof(fsconf->hasopt));
-  printf("hasopt in:\n");
-  char c = fsconf->hasopt;
-  printf("octal: %o\nhex: %x\ndecimal: %d\n", c, c, c);
+  char c = fsconf[0]->hasopt;
 
-  printf("conf: root path -> %s\n", fsconf->input_args->path);
-  // printf("Finished parsing options\n");
-  return *fsconf;
+  return 1;
 }

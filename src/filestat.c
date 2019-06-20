@@ -2,7 +2,8 @@
 
 int main(int argc, char **argv)
 {
-  fsconf = getOptions(argc, argv, &fsconf);
+  filestat_configuration *pfsconf = &fsconf;
+  getOptions(argc, argv, &pfsconf);
 
   printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);
 
