@@ -23,8 +23,6 @@ typedef struct s_file_info {
 
 #include "print.h"
 
-static filestat_configuration fsconf;
-
 void filestat(input_file_argument *input_args);
 file_info statcpy(struct stat *stbuf);
 void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *));

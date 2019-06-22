@@ -33,7 +33,7 @@ typedef struct s_filestat_configuration {
 } filestat_configuration;
 
 void initFilestat(int argc, char *argv[], filestat_configuration *fsconf);
-filestat_configuration getOptions(int argc, char *argv[], filestat_configuration *fsconf);
+int getOptions(int argc, char *argv[], filestat_configuration **fsconf);
 
 
 #endif
