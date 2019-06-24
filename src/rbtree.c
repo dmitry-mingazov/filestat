@@ -4,28 +4,39 @@ struct s_node s_nullnode;
 treenode *nullnode = &s_nullnode;
 treenode *root = NULL;
 
-static treenode *newtreenode(ino_t inode);
+
+static treenode *newtreenode(scanned_path *file);
 static void rotateleft(treenode **root, treenode *x);
 static void rotateright(treenode **root, treenode *x);
-static int rbinsert(treenode **root, ino_t inode);
+static scanned_path *rbinsert(treenode **root, scanned_path *file);
 static void insertfixup(treenode **root, treenode *newnode);
+
+typedef struct tree_descriptor{
+  treenode *root;
+  long int size;
+}tree_descriptor;
+
+static tree_descriptor this;
+static tree_descriptor *thistree = &this;
 
 void init_rbtree(void)
 {
-    root = nullnode;
+  thistree->root = nullnode;
+  thistree->size = 0;
 }
 
-int add_rbtree(ino_t inode)
+scanned_path *add_rbtree(scanned_path *file)
 {
-  return rbinsert(&root, inode);
+  return rbinsert(&thistree->root, file);
+
 }
 
 
 
-static treenode *newtreenode(ino_t inode)
+static treenode *newtreenode(scanned_path *file)
 {
   treenode *temp = (treenode*) malloc(sizeof(treenode));
-  temp->inode = inode;
+  temp->file = file;
   temp->color = RED;
   temp->left = NULL;
   temp->right = NULL;
@@ -70,26 +81,29 @@ static void rotateright(treenode **root, treenode *x)
   x->parent = y;
 }
 
-static int rbinsert(treenode **root, ino_t inode)
+static scanned_path *rbinsert(treenode **root, scanned_path *file)
 {
-  treenode *newnode = newtreenode(inode);
+  treenode *newnode = newtreenode(file);
   treenode *y = nullnode;
-  treenode *x = *root;
-  // printf("rbinsert: inserting %ld\n", inode);
+  treenode *x = root[0];
+  int compare;
+  printf("rbinsert: inserting %s\n", newnode->file->path);
   while(x != nullnode){
     y = x;
-    if(newnode->inode < x->inode)
+    compare = strcmp(newnode->file->path, x->file->path);
+    // printf("%s %d %s\n", newnode->file->path, compare, x->file->path);
+    if(compare < 0)
       x = x->left;
-    else if(newnode->inode > x->inode)
+    else if(compare > 0)
       x = x->right;
     else
-      return FOUND;
+      return x->file;
   }
-
+  thistree->size++;
   newnode->parent = y;
   if(y == nullnode)
     *root = newnode;
-  else if(newnode->inode < y->inode)
+  else if(strcmp(newnode->file->path, y->file->path) < 0)
     y->left = newnode;
   else
     y->right = newnode;
@@ -100,7 +114,7 @@ static int rbinsert(treenode **root, ino_t inode)
 
   // printf("rbinsert: inserted\n");
   insertfixup(root, newnode);
-  return INSERTED;
+  return newnode->file;
 }
 
 static void insertfixup(treenode **root, treenode *newnode)
@@ -109,8 +123,8 @@ static void insertfixup(treenode **root, treenode *newnode)
 
   while((newnode != *root) && (newnode->parent->color == RED)){
     // printf("insertfixup: fixing %ld\n", newnode->inode);
-    if(newnode->parent->inode
-      == newnode->parent->parent->left->inode){
+    if(newnode->parent
+      == newnode->parent->parent->left){
       //if newnode's parent is a left child, temp is right uncle
       temp = newnode->parent->parent->right;
       if(temp->color == RED){
@@ -123,7 +137,7 @@ static void insertfixup(treenode **root, treenode *newnode)
       }
       else{
         //temp is a black node
-        if(newnode->inode == newnode->parent->right->inode){
+        if(newnode == newnode->parent->right){
           newnode = newnode->parent;
           rotateleft(root, newnode);
         }
@@ -146,7 +160,7 @@ static void insertfixup(treenode **root, treenode *newnode)
       }
       else{
         //temp is a black node
-        if(newnode->inode == newnode->parent->left->inode){
+        if(newnode == newnode->parent->left){
           newnode = newnode->parent;
           rotateright(root, newnode);
         }
@@ -157,4 +171,37 @@ static void insertfixup(treenode **root, treenode *newnode)
     }
   }
   root[0]->color = BLACK;
+}
+
+static int count;
+static scanned_path **pathlist;
+
+static void inorder(treenode *root);
+
+scanned_path **inorder_visit(void)
+{
+  if(thistree->root == nullnode){
+    return NULL;
+  }
+  printf("SIZE: %ld\n",thistree->size);
+  pathlist = (scanned_path**) malloc(sizeof(scanned_path) * thistree->size);
+  count = 0;
+  inorder(thistree->root);
+  int i = thistree->size;
+
+  while(--i >= 0){
+    printf("INORDER: %s\n", pathlist[i]->path);
+  }
+}
+
+void inorder(treenode *root)
+{
+  if(root->left != nullnode){
+    inorder(root->left);
+  }
+  pathlist[count] = root->file;
+  count++;
+  if(root->right != nullnode){
+    inorder(root->right);
+  }
 }

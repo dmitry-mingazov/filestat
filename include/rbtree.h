@@ -4,7 +4,8 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <string.h>
+#include "filestat.h"
 #define BLACK 'B'
 #define RED 'R'
 
@@ -12,7 +13,7 @@
 #define INSERTED 1
 
 typedef struct s_node{
-  ino_t inode;
+  scanned_path *file;
   char color;
   struct s_node *left;
   struct s_node *right;
@@ -20,7 +21,8 @@ typedef struct s_node{
 } treenode;
 
 void init_rbtree(void);
-int add_rbtree(ino_t inode);
+scanned_path *add_rbtree(scanned_path *file);
+scanned_path **inorder_visit(void);
 
 
 #endif

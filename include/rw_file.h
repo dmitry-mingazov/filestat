@@ -16,5 +16,6 @@ typedef struct s_input_file_argument {
 } input_file_argument;
 
 input_file_argument *readInputFile(char *path);
+void writeOutputFile(char *file_path);
 
 #endif

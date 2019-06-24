@@ -4,7 +4,7 @@ input_file_argument *readInputFile(char *path)
 {
   FILE *fp;
   fp = fopen(path, "r");
-  printf("Input file: %s\n", path);
+  // printf("Input file: %s\n", path);
   if(fp == NULL){
     fprintf(stderr, "Cannot open %s, exiting. . .\n", path);
     exit(1);
@@ -34,14 +34,14 @@ input_file_argument *readInputFile(char *path)
 
     curr->options = 00;
     //TODO: make it upgradable
-    printf("Buffer: %s", buf);
+    // printf("Buffer: %s", buf);
     curr->path = malloc(sizeof(char) * bufsize);
     if(sscanf(buf, "%s %c %c", curr->path, &opts[0], &opts[1]) < 1){
       //if this line is empty or has only "space" characters, ignore it
       continue;
       // fprintf(stderr, "SSCANF ERROR\n");
     }
-    printf("rw_file: curr->path = %s\n", curr->path);
+    // printf("rw_file: curr->path = %s\n", curr->path);
     for(i = 0; i < PATH_ARGUMENTS; i++){
       switch(opts[i]){
         case 'r':
@@ -57,9 +57,22 @@ input_file_argument *readInputFile(char *path)
           exit(1);
       }
     }
-  printf("rw_file: %s has %o opts\n", curr->path, curr->options);
+  // printf("rw_file: %s has %o opts\n", curr->path, curr->options);
   prev = curr;
 
   }
   return root;
+}
+
+void writeOutputFile(char *file_path)
+{
+  FILE *fp;
+  fp = fopen(file_path, "w");
+
+  if(fp == NULL){
+    fprintf(stderr, "Cannot open %s, exiting. . .\n", file_path);
+    exit(1);
+  }
+
+
 }

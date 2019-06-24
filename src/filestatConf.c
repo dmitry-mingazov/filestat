@@ -41,38 +41,39 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
       switch (nextOpt) {
         case 'v':
           fsconf[0]->hasopt |= VERBOSE;
-          printf("opt: verbose\n");
+          // printf("opt: verbose\n");
           break;
         case 's':
           fsconf[0]->hasopt |= STAT;
-          printf("opt: scan\n");
+          // printf("opt: scan\n");
           break;
         case 'r':
           fsconf[0]->hasopt |= REPORT;
-          printf("opt: report\n");
+          // printf("opt: report\n");
           break;
         case 'h':
           fsconf[0]->hasopt |= HISTORY;
-          printf("opt: history = %s\n", optarg);
+          // printf("opt: history = %s\n", optarg);
           break;
         case 'u':
           fsconf[0]->hasopt |= USER;
-          printf("opt: user = %s\n", optarg);
+          // printf("opt: user = %s\n", optarg);
           break;
         case 'g':
           fsconf[0]->hasopt |= GROUP;
-          printf("opt: group = %s\n", optarg);
+          // printf("opt: group = %s\n", optarg);
           break;
         case 'l':
           fsconf[0]->hasopt |= LENGTH;
-          printf("opt: length = %s\n", optarg);
+          // printf("opt: length = %s\n", optarg);
           break;
         case 'n':
           fsconf[0]->hasopt |= NOSCAN;
-          printf("opt: noscan\n");
+          // printf("opt: noscan\n");
           break;
         default:
-          printf("Invalid option\n");
+          printf("\n");
+          exit(1);
     }
   }
   // printf("-------------\n");

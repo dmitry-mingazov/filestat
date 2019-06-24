@@ -7,11 +7,11 @@ int main(int argc, char **argv)
   filestat_configuration *pfsconf = &fsconf;
   getOptions(argc, argv, &pfsconf);
 
-  printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);
+  // printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);
 
   input_file_argument *input_args = fsconf.input_args;
 
-  printf("main: root path -> %s\n", input_args->path);
+  // printf("main: root path -> %s\n", input_args->path);
   if(fsconf.input_args == NULL){
     printf("FSCONF.input_args NULL\n");
   }
@@ -25,14 +25,14 @@ int main(int argc, char **argv)
     filestat(input_args);
     input_args = input_args->next;
   }
-
+  inorder_visit();
 }
 
 
 void filestat(input_file_argument *input_args)
 {
   struct stat stbuf;
-  file_info fsbuf;
+  file_info *fsbuf = (file_info*) malloc(sizeof(file_info));
 
   if((input_args->options & FOLLOW_LINK) == FOLLOW_LINK){
     if(stat(input_args->path, &stbuf) == -1){
@@ -46,7 +46,25 @@ void filestat(input_file_argument *input_args)
     }
   }
 
-  fsbuf = statcpy(&stbuf);
+  *fsbuf = statcpy(&stbuf);
+
+  scanned_path sp_empty;
+  sp_empty.path = input_args->path;
+  sp_empty.head = NULL;
+  sp_empty.tail = NULL;
+  scanned_path *spbuf = (scanned_path*) malloc(sizeof(scanned_path));
+  *spbuf = sp_empty;
+  spbuf = add_rbtree(spbuf);
+  if(spbuf->head == NULL){
+    spbuf->head = fsbuf;
+    spbuf->tail = fsbuf;
+  }else{
+    spbuf->tail->next = fsbuf;
+    spbuf->tail = fsbuf;
+  }
+
+
+
   // printf("filestat: checked %s\n", input_args->path);
   // printf("---filestat: size %ld\n", fsbuf.size);
   // char perm[10];
@@ -54,16 +72,12 @@ void filestat(input_file_argument *input_args)
   // printf("---filestat: permissions %o\n", READABLE_PERMS(fsbuf.mode));
   // printf("---filestat: permissions %s\n", perm);
   if((fsconf.hasopt & VERBOSE) == VERBOSE){
-	   printFstat(fsbuf, input_args->path);
+	   printFstat(*fsbuf, input_args->path);
   }
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)
-  && (S_ISDIR(fsbuf.mode))){
-    if(add_rbtree(stbuf.st_ino))
-      dirwalk(input_args, filestat);
-    else{
-      printf("LINK FOUND\n\n");
-    }
+  && (S_ISDIR(fsbuf->mode))){
+    dirwalk(input_args, filestat);
   }
 }
 
@@ -96,6 +110,8 @@ void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *))
   }
   closedir(dfd);
 }
+
+
 
 file_info statcpy(struct stat *stbuf)
 {

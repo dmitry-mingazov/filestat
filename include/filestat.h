@@ -6,8 +6,6 @@
 #include <time.h>
 #include <sys/dir.h>
 
-#include "utils.h"
-#include "rbtree.h"
 
 typedef struct s_file_info {
   time_t date;
@@ -19,8 +17,17 @@ typedef struct s_file_info {
   nlink_t nlink;
   uid_t uid;
   gid_t gid;
+  struct s_file_info *next;
 } file_info;
 
+typedef struct s_path {
+  char *path;
+  file_info *head;
+  file_info *tail;
+} scanned_path;
+
+#include "utils.h"
+#include "rbtree.h"
 #include "print.h"
 
 void filestat(input_file_argument *input_args);
