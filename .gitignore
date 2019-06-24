@@ -4,6 +4,8 @@
 filestat.in
 filestat.db
 
+.vscode
+
 # Object files
 *.o
 *.ko

@@ -14,5 +14,6 @@
 
 input_file_argument *readInputFile(char *path);
 void writeOutputFile(char *file_path);
+void readOutputFile(char *file_path);
 
 #endif

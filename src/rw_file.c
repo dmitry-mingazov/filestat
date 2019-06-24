@@ -64,6 +64,85 @@ input_file_argument *readInputFile(char *path)
   return root;
 }
 
+void readOutputFile(char *file_path)
+{
+  FILE *fp;
+  fp = fopen(file_path, "r");
+
+  if(fp == NULL){
+    return;
+  }
+
+  scanned_path *tmp_path;
+  file_info *tmp_info;
+
+  size_t n = 0;
+  size_t bufsize = 0;
+  char *buf;
+
+  int pound = 0;
+
+  // while(endfile){
+  //   c = getc(fp);
+  //   if(c == EOF){
+  //     return;
+  //   }
+  //   if(c == '#'){
+  //     pound++;
+  //     continue;
+  //   }
+  //   pound--;
+  //   if(c == '\n'){
+  //
+  //   }
+  // }
+
+  while((bufsize = getline(&buf, &n, fp)) != -1){
+    //if is path name, analyze it
+    if(buf[0] == '#'){
+      if(buf[1] != '#'){
+        tmp_path = (scanned_path*) malloc(sizeof(scanned_path));
+        tmp_path->head = NULL;
+        tmp_path->tail = NULL;
+        tmp_path->path = (char*) malloc(sizeof(char) * (bufsize - 1));
+        sscanf(buf, "# %s", tmp_path->path);
+        continue;
+      }else{
+        pound++;
+        if(pound < 2){
+          add_rbtree(tmp_path);
+          continue;
+        }else{
+          break;
+        }
+      }
+    }
+    pound = 0;
+    tmp_info = (file_info*) malloc(sizeof(file_info));
+    if(sscanf(buf, "%ld %d %d %ld %o %ld %ld %ld %ld\n",
+      &tmp_info->date,
+      &tmp_info->uid,
+      &tmp_info->gid,
+      &tmp_info->size,
+      &tmp_info->mode,
+      &tmp_info->atime,
+      &tmp_info->ctime,
+      &tmp_info->mtime,
+      &tmp_info->nlink) <= 0){
+        free(tmp_info);
+        continue;
+            }
+
+    if(tmp_path->head == NULL){
+      tmp_path->head = tmp_info;
+      tmp_path->tail = tmp_info;
+    }else{
+      tmp_path->tail->next = tmp_info;
+      tmp_path->tail = tmp_info;
+    }
+  }
+}
+
 void writeOutputFile(char *file_path)
 {
   FILE *fp;

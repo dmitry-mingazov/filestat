@@ -21,6 +21,8 @@ int main(int argc, char **argv)
 
   init_rbtree();
 
+  readOutputFile(pfsconf->output_file);
+
   while(input_args != NULL){
     filestat(input_args);
     input_args = input_args->next;
