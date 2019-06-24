@@ -5,30 +5,12 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <sys/dir.h>
-
-
-typedef struct s_file_info {
-  time_t date;
-  off_t size;
-  mode_t mode;
-  time_t atime;
-  time_t mtime;
-  time_t ctime;
-  nlink_t nlink;
-  uid_t uid;
-  gid_t gid;
-  struct s_file_info *next;
-} file_info;
-
-typedef struct s_path {
-  char *path;
-  file_info *head;
-  file_info *tail;
-} scanned_path;
+#include "structs.h"
 
 #include "utils.h"
 #include "rbtree.h"
 #include "print.h"
+#include "rw_file.h"
 
 void filestat(input_file_argument *input_args);
 file_info statcpy(struct stat *stbuf);

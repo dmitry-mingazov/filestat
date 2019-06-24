@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
+#include "structs.h"
 #include "rw_file.h"
 
 #define VERBOSE 01
@@ -21,16 +22,8 @@
 #define DEFAULT_INPUT_FILE "filestat.in"
 #define DEFAULT_OUTPUT_FILE "filestat.db"
 
-typedef struct s_filestat_configuration {
-  unsigned char hasopt;
-  char *history;
-  uid_t user;
-  gid_t group;
-  off_t length_min;
-  off_t length_max;
-  char *output_file;
-  input_file_argument *input_args;
-} filestat_configuration;
+
+
 
 void initFilestat(int argc, char *argv[], filestat_configuration *fsconf);
 int getOptions(int argc, char *argv[], filestat_configuration **fsconf);

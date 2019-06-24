@@ -178,21 +178,32 @@ static scanned_path **pathlist;
 
 static void inorder(treenode *root);
 
-scanned_path **inorder_visit(void)
+void inorder_visit(void)
 {
   if(thistree->root == nullnode){
-    return NULL;
+    return;
   }
   printf("SIZE: %ld\n",thistree->size);
   pathlist = (scanned_path**) malloc(sizeof(scanned_path) * thistree->size);
   count = 0;
   inorder(thistree->root);
+  count = 0;
+  return;
   int i = thistree->size;
-
-  while(--i >= 0){
-    printf("INORDER: %s\n", pathlist[i]->path);
-  }
+  // while(--i >= 0){
+  //   printf("INORDER: %s\n", pathlist[i]->path);
+  // }
 }
+
+scanned_path *rbnext(void)
+{
+  if(count == thistree->size)
+    return NULL;
+
+  return pathlist[count++];
+}
+
+
 
 void inorder(treenode *root)
 {

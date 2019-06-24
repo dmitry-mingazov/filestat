@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "filestat.h"
+#include "structs.h"
 
 void printFstat(file_info temp_file, char *filename);
 

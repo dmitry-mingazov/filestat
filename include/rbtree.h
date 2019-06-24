@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "filestat.h"
+#include "structs.h"
 #define BLACK 'B'
 #define RED 'R'
 
@@ -22,7 +22,8 @@ typedef struct s_node{
 
 void init_rbtree(void);
 scanned_path *add_rbtree(scanned_path *file);
-scanned_path **inorder_visit(void);
+void inorder_visit(void);
+scanned_path *rbnext(void);
 
 
 #endif

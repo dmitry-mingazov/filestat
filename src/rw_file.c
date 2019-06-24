@@ -73,6 +73,27 @@ void writeOutputFile(char *file_path)
     fprintf(stderr, "Cannot open %s, exiting. . .\n", file_path);
     exit(1);
   }
-
+  scanned_path *tmp_path;
+  file_info *tmp_info;
+  while((tmp_path = rbnext()) != NULL){
+    fprintf(fp, "# %s\n", tmp_path->path);
+    tmp_info = tmp_path->head;
+    while(tmp_info !=  NULL){
+      fprintf(fp, "%ld %d %d %ld %o %ld %ld %ld %ld\n",
+              tmp_info->date,
+              tmp_info->uid,
+              tmp_info->gid,
+              tmp_info->size,
+              tmp_info->mode,
+              tmp_info->atime,
+              tmp_info->ctime,
+              tmp_info->mtime,
+              tmp_info->nlink);
+      tmp_info = tmp_info->next;
+    }
+    fprintf(fp, "###\n");
+  }
+  fprintf(fp, "###\n");
+  fclose(fp);
 
 }

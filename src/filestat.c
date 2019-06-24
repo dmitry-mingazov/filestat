@@ -26,6 +26,7 @@ int main(int argc, char **argv)
     input_args = input_args->next;
   }
   inorder_visit();
+  writeOutputFile(pfsconf->output_file);
 }
 
 
@@ -129,6 +130,7 @@ file_info statcpy(struct stat *stbuf)
   fsbuf.nlink = stbuf->st_nlink;
   fsbuf.uid = stbuf->st_uid;
   fsbuf.gid = stbuf->st_gid;
+  fsbuf.next = NULL;
 
   return fsbuf;
 }

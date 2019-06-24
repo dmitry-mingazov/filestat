@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+filestat.in
+filestat.db
+
 # Object files
 *.o
 *.ko
