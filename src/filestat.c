@@ -1,4 +1,5 @@
 #include "filestat.h"
+#include <time.h>
 
 static filestat_configuration fsconf;
 
@@ -7,11 +8,13 @@ int main(int argc, char **argv)
   filestat_configuration *pfsconf = &fsconf;
   getOptions(argc, argv, &pfsconf);
 
-  // printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);
+  clock_t begin = clock();
+
+  /* printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);*/
 
   input_file_argument *input_args = fsconf.input_args;
 
-  // printf("main: root path -> %s\n", input_args->path);
+  /* printf("main: root path -> %s\n", input_args->path);*/
   if(fsconf.input_args == NULL){
     printf("FSCONF.input_args NULL\n");
   }
@@ -29,8 +32,12 @@ int main(int argc, char **argv)
   }
   inorder_visit();
   writeOutputFile(pfsconf->output_file);
-}
 
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  //free della memoria (?)
+}
 
 void filestat(input_file_argument *input_args)
 {
@@ -66,16 +73,28 @@ void filestat(input_file_argument *input_args)
     spbuf->tail = fsbuf;
   }
 
-
-
-  // printf("filestat: checked %s\n", input_args->path);
+  /* printf("filestat: checked %s\n", input_args->path);
   // printf("---filestat: size %ld\n", fsbuf.size);
   // char perm[10];
   // parse_mode(fsbuf.mode, perm);
   // printf("---filestat: permissions %o\n", READABLE_PERMS(fsbuf.mode));
-  // printf("---filestat: permissions %s\n", perm);
+  // printf("---filestat: permissions %s\n", perm);*/
   if((fsconf.hasopt & VERBOSE) == VERBOSE){
 	   printFstat(*fsbuf, input_args->path);
+  }
+
+  if((fsconf.hasopt & STAT) == STAT){
+    /*printf("Number of files monitored: %d\n", );
+    printf("Number of links: %d\n", );
+    printf("Number of directories: %d\n", );
+    printf("Tot files dimension: %ld\n", );
+    printf("Avg file dimension: %ld\n", );
+    printf("Max file dimension: %ld\n", );
+    printf("Min file dimension: %ld\n", );*/
+  }
+
+  if((fsconf.hasopt & REPORT) == REPORT){
+
   }
 
   if(((input_args->options & RECURSIVE) == RECURSIVE)
@@ -113,8 +132,6 @@ void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *))
   }
   closedir(dfd);
 }
-
-
 
 file_info statcpy(struct stat *stbuf)
 {

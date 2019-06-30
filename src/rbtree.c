@@ -28,10 +28,7 @@ void init_rbtree(void)
 scanned_path *add_rbtree(scanned_path *file)
 {
   return rbinsert(&thistree->root, file);
-
 }
-
-
 
 static treenode *newtreenode(scanned_path *file)
 {

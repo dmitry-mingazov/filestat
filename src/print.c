@@ -11,7 +11,8 @@ void printFstat(file_info temp_file, char* filename){
 	printf("Number of links: %lu \n",temp_file.nlink);
 	printf("User ID:         %d \n",temp_file.uid);
 	printf("Group ID:        %d \n",temp_file.gid);
-	char perm[10];
+
+  char perm[10];
 
 	parse_mode(temp_file.mode, perm);
 	printf("Permissions:     %s\n", perm);
