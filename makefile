@@ -5,6 +5,7 @@ SRCDIR = src
 SRC = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
 DEPS = $(wildcard $(INCDIR)/*.h)
+CLEAN = rm -f
 OUT = filestat
 CCFLAGS = -I ./$(INCDIR) -Wall
 
@@ -16,3 +17,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS)
 
 $(OUT): $(OBJS)
 	$(CC) -o $@ $^ $(CCFLAGS)
+
+clean:
+	$(CLEAN) $(OBJDIR)/*.o
+	$(CLEAN) $(OUT)

@@ -84,7 +84,7 @@ static scanned_path *rbinsert(treenode **root, scanned_path *file)
   treenode *y = nullnode;
   treenode *x = root[0];
   int compare;
-  printf("rbinsert: inserting %s\n", newnode->file->path);
+  // printf("rbinsert: inserting %s\n", newnode->file->path);
   while(x != nullnode){
     y = x;
     compare = strcmp(newnode->file->path, x->file->path);
@@ -180,7 +180,7 @@ void inorder_visit(void)
   if(thistree->root == nullnode){
     return;
   }
-  printf("SIZE: %ld\n",thistree->size);
+  // printf("SIZE: %ld\n",thistree->size);
   pathlist = (scanned_path**) malloc(sizeof(scanned_path) * thistree->size);
   count = 0;
   inorder(thistree->root);
