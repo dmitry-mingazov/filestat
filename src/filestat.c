@@ -8,7 +8,7 @@ int main(int argc, char **argv)
   filestat_configuration *pfsconf = &fsconf;
   getOptions(argc, argv, &pfsconf);
 
-  clock_t begin = clock();
+  clock_t start = clock();
 
   /* printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);*/
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
   writeOutputFile(pfsconf->output_file);
 
   clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
 
   //free della memoria (?)
 }
