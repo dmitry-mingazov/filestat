@@ -19,6 +19,8 @@
 #define GROUP 0100
 #define LENGTH 0200
 
+#define HASOPT(OPTIONS, OPT) (OPTIONS & OPT) == OPT
+
 #define DEFAULT_INPUT_FILE "filestat.in"
 #define DEFAULT_OUTPUT_FILE "filestat.db"
 

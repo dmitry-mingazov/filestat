@@ -44,7 +44,7 @@ void filestat(input_file_argument *input_args)
   struct stat stbuf;
   file_info *fsbuf = (file_info*) malloc(sizeof(file_info));
 
-  if((input_args->options & FOLLOW_LINK) == FOLLOW_LINK){
+  if(HASOPT(input_args->options, FOLLOW_LINK)){
     if(stat(input_args->path, &stbuf) == -1){
       fprintf(stderr, "filestat: can't access to %s\n", input_args->path);
       return ;
@@ -79,11 +79,11 @@ void filestat(input_file_argument *input_args)
   // parse_mode(fsbuf.mode, perm);
   // printf("---filestat: permissions %o\n", READABLE_PERMS(fsbuf.mode));
   // printf("---filestat: permissions %s\n", perm);*/
-  if((fsconf.hasopt & VERBOSE) == VERBOSE){
+  if(HASOPT(fsconf.hasopt, VERBOSE)){
 	   printFstat(*fsbuf, input_args->path);
   }
 
-  if((fsconf.hasopt & STAT) == STAT){
+  if(HASOPT(fsconf.hasopt, STAT)){
     /*printf("Number of files monitored: %d\n", );
     printf("Number of links: %d\n", );
     printf("Number of directories: %d\n", );
@@ -93,11 +93,11 @@ void filestat(input_file_argument *input_args)
     printf("Min file dimension: %ld\n", );*/
   }
 
-  if((fsconf.hasopt & REPORT) == REPORT){
+  if(HASOPT(fsconf.hasopt, REPORT)){
 
   }
 
-  if(((input_args->options & RECURSIVE) == RECURSIVE)
+  if((HASOPT(fsconf.hasopt, RECURSIVE))
   && (S_ISDIR(fsbuf->mode))){
     dirwalk(input_args, filestat);
   }
