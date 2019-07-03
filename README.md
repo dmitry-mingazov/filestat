@@ -1,72 +1,94 @@
 # filestat
 
-### descrizione
+### Descritption
 
-Sviluppare una applicazione di sistema Unix/Linux chiamata `filestat` che sia in grado di monitorare un insieme di file raccogliendo informazioni su\:
-- dimensione (in byte);
-- permessi;
-- data ultimo accesso al file;
-- data ultima modifica del file;
-- data ultima modifica dei permessi;
-- numero di link al file;
-- proprietario;
-- gruppo.
+Develop a Unix/Linux system application called `filestat` which is capable of monitoring a set of files collecting info about\:
+- size (byte);
+- permissions;
+- time of last access;
+- time of last modification;
+- time of last status change;
+- number of links at file;
+- owner;
+- group.
 
-Queste informazioni sono recuperabili usando le funzioni `stat()`, `lstat()` e `fstat()`. 
-
-La sinossi del programma è\:   
+Program synopsis is the following\:   
 `filestat [options] [input] [output]`
-Dove (NB: le opzioni lunghe iniziano con il doppio `-`)\:  
-- `input` è il file di input dove vengono definiti i parametri di esecuzione del programma, se omesso viene usato il file `filestat.in`;
-- `output` è il file di output dove vengono collezionati i dati raccolti, se omesso viene usato il file `filestat.db`;
-- `options` è la lista di opzioni\:
-    - `–verbose|-v`\: durante l'esecuzione il programma mostra a video le informazioni sui file elaborati, ed i dati raccolti;
-    - `–stat|-s`\: vengono mostrate sullo standard output le seguenti statistiche\:
-        1. numero di file monitorati;
-        2. numero di link;
-        3. numero di directory;
-        4. dimensione totale;
-        5. dimensione media;
-        6. dimensione massima;
-        7. dimensione minima (in byte).
-    - `–report|-r`\: al termine dell'esecuzione vengono mostrati sullo standard output le informazioni riguardanti numero di file elaborati, tempo di elaborazione, dimensione massima del file;
-    - `–history|-h <filepah>`\: stampa sullo standard output la cronologia delle informazioni riguardanti il file `<filepah>`;
-    - `–user|-u <userId>`\: stampa sullo standard output le informazioni di tutti i file di proprietà di `<userId>`
-    - `–group|-g <groupId>`\: stampa sullo standard output le informazioni di tutti i file di proprietà di `<groupId>`
-    - `–length|-l <min>:<max>`\: stampa sullo schermo le informazioni di tutti i file di dimensione (in byte) compresa tra `<min>` e `<max>` (`:<max>`indica ogni file di dimensione al più `<max>`, `<min>:` e `<min>` indicano ogni file di dimensione almeno `<min>`) 
+Where\:  
+- `input` is the input file which contains executing arguments of program, if omitted is used `filestat.in`;
+- `output` is the output file where collected data is stored, if omitted is used `filestat.db`. Informations contained into output file are updated at any program execution (and not overwrited);
 
-### Formato file di input
+Possible options are the following:
+```
+ --verbose | -v  
+ --stat | -s  
+ --report | -r  
+ --history | -h <filepath>  
+ --user | -u <userID>  
+ --group | -g <groupID>   
+ --length | -l <min>:<max>   
+ --noscan  
+ ```
 
-I parametri di esecuzione di un programma vengono definiti in un file di testo costituito da una sequenza di righe della seguente forma\:  
+following are the options description:
+    - `–verbose|-v`\: during program execution it print informations about elaboreted files, and collected data;
+    - `–stat|-s`\: the following stats are shown on standard output\:
+        1. number of monitored files;
+        2. number of links;
+        3. number of directories;
+        4. total size;
+        5. average size;
+        6. maximum size;
+        7. minimum size (byte).
+    - `–report|-r`\: at the end of execution are shown information about number of monitored files, time of execution, maximum size;
+    - `–history|-h <filepah>`\: shows on standard output data history of file `<filepah>`;
+    - `–user|-u <userId>`\: shows on standard output info of all files owned by `<userId>`
+    - `–group|-g <groupId>`\: shows on standard output info of all files owned by `<groupId>`
+    - `–length|-l <min>:<max>`\: shows on standard output info of all files that have size (byte) between`<min>` and `<max>` (`:<max>` stands for any file which is at maximum `<max>` in size, `<min>:` and `<min>` stands for any file which is at least `<min>` in size) 
+
+### Input file format
+
+Executing arguments are defined in a text file made of a sequences of row with the following format\:  
 `<path> [r] [l]`  
-Dove `r` indica che occorre leggere ricorsivamente i file nelle directory sottostanti (applicando le stesse opzioni) mentre `l` indica che i link devono essere trattati come file/directory regolari, in questo caso le informazioni collezionate fanno riferimento al file riferito dal link e non a link stesso. 
+Where `r` indicates that is necessary read recursively files on subdirectories (applying same options) while `l` indicates that links must be treated as regular file/directory, in this case data collected refers to file reffered by the link and not link itself . 
 
-### Formato file di output
+### Output file format
 
-I dati raccolti vengono salvati usando il seguente formato\:  
+Collected data is structured as following:  
 ```
- # <path1> <data1> <uid1> <gid1> <dim1> <perm1> <acc1> <change1> <mod1> <nlink1> … <data_n> <uid_n> <gid_n> <dim_n> <perm_n> <acc_n> <change_n> <mod_n> <nlink_n>
-
-# <path2> <data1> <uid1> <gid1> <dim1> <perm1> <acc1> <change1> <mod1> <nlink1> … <data_n> <uid_n> <gid_n> <dim_n> <perm_n> <acc_n> <change_n> <mod_n> <nlink_n>
-
-… # <pathm> <data1> <uid1> <gid1> <dim1> <perm1> <acc1> <change1> <mod1> <nlink1> … <data_n> <uid_n> <gid_n> <dim_n> <perm_n> <acc_n> <change_n> <mod_n> <nlink_n> ### ### 
+# <path1>  
+<data1> <uid1> <gid1> <dim1> <perm1> <acc1> <change1> <mod1> <nlink1>  
+…  
+<data_n> <uid_n> <gid_n> <dim_n> <perm_n> <acc_n> <change_n> <mod_n> <nlink_n>  
+###  
+# <path2> 
+<data1> <uid1> <gid1> <dim1> <perm1> <acc1> <change1> <mod1> <nlink1> 
+…  
+<data_n> <uid_n> <gid_n> <dim_n> <perm_n> <acc_n> <change_n> <mod_n> <nlink_n>  
+###  
+… # <pathm>  
+<data1> <uid1> <gid1> <dim1> <perm1> <acc1> <change1> <mod1> <nlink1>  
+…  
+<data_n> <uid_n> <gid_n> <dim_n> <perm_n> <acc_n> <change_n> <mod_n> <nlink_n>   
+###  
+### 
 ```
-Le informazioni associate al file/directory `<path>` iniziano con la riga\:  
+Info associated at directory/file `<path>` begin with\:  
 `# <path>`  
-Successivamente si trovano una sequenza di righe (una per ogni analisi svolta) della forma\:  
+Then there are a sequence of rows (one for every analyze done) with the following format\:  
 `<data> <uid> <gid> <dim> <perm> <acc> <change> <mod> <nlink>`  
-Dove\:  
-    - `<data>` indica ora-data in cui sono recuperate le informazioni;
-    - `<uid>` è l'id dell'utente proprietario del file;
-    - `<gid>` è l'id del gruppo del file;
-    - `<perm>` è la stringa con i diritti di accesso al file;
-    - `<acc>` data dell'ultimo accesso;
-    - `<change>` data dell'ultimo cambiamento
-    - `<mod>` data dell'ultima modifica dei permessi;
-    - `<nlink>` numero di link verso il file.
+Where\:  
+    - `<data>` indicates time of when info have been collected;
+    - `<uid>` is owner's user ID;
+    - `<gid>` is owner's group ID;
+    - `<perm>` is the permissions string;
+    - `<acc>` time of last access;
+    - `<change>` time of last modification
+    - `<mod>` time of last status change;
+    - `<nlink>` number of link forward to file.
     
-Le informazioni terminano con la riga\:   
+Info end with the following row\:   
 `###`  
-Il file termina con una riga\:  
+File ends with the following row\:  
 `###`  
 
