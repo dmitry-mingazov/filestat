@@ -82,7 +82,7 @@ static scanned_path *rbinsert(treenode **root, scanned_path *file)
 {
   treenode *newnode = newtreenode(file);
   treenode *y = nullnode;
-  treenode *x = root[0];
+  treenode *x = *root;
   int compare;
   // printf("rbinsert: inserting %s\n", newnode->file->path);
   while(x != nullnode){
@@ -100,14 +100,13 @@ static scanned_path *rbinsert(treenode **root, scanned_path *file)
   newnode->parent = y;
   if(y == nullnode)
     *root = newnode;
-  else if(strcmp(newnode->file->path, y->file->path) < 0)
+  else if(compare < 0)
     y->left = newnode;
   else
     y->right = newnode;
 
   newnode->left = nullnode;
   newnode->right = nullnode;
-  newnode->color = RED;
 
   // printf("rbinsert: inserted\n");
   insertfixup(root, newnode);
@@ -120,8 +119,7 @@ static void insertfixup(treenode **root, treenode *newnode)
 
   while((newnode != *root) && (newnode->parent->color == RED)){
     // printf("insertfixup: fixing %ld\n", newnode->inode);
-    if(newnode->parent
-      == newnode->parent->parent->left){
+    if(newnode->parent == newnode->parent->parent->left){
       //if newnode's parent is a left child, temp is right uncle
       temp = newnode->parent->parent->right;
       if(temp->color == RED){

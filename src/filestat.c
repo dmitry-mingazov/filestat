@@ -97,7 +97,7 @@ void filestat(input_file_argument *input_args)
 
   }
 
-  if((HASOPT(fsconf.hasopt, RECURSIVE))
+  if((HASOPT(input_args->options, RECURSIVE))
   && (S_ISDIR(fsbuf->mode))){
     dirwalk(input_args, filestat);
   }

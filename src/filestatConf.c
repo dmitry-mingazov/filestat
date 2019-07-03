@@ -1,5 +1,6 @@
 #include "filestatConf.h"
 
+static off_t parse_length_argument(char *arg);
 
 void initFilestat(int argc, char *argv[], filestat_configuration *fsconf)
 {
@@ -21,6 +22,8 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
 
   fsconf[0]->input_args = malloc(sizeof(input_file_argument));
 
+  char *err_invalid_argument = "Passed invalid argument\n";
+
   int nextOpt;
   int optIndex = 0;
   const char* short_opts = "vsrh:u:g:l:";
@@ -37,39 +40,40 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
   };
 
   while((nextOpt = getopt_long(argc, argv, short_opts, long_opts, &optIndex)) != -1) {
-      printf("%d ", optind);
       switch (nextOpt) {
         case 'v':
           fsconf[0]->hasopt |= VERBOSE;
-          // printf("opt: verbose\n");
           break;
         case 's':
           fsconf[0]->hasopt |= STAT;
-          // printf("opt: scan\n");
           break;
         case 'r':
           fsconf[0]->hasopt |= REPORT;
-          // printf("opt: report\n");
           break;
         case 'h':
           fsconf[0]->hasopt |= HISTORY;
-          // printf("opt: history = %s\n", optarg);
+          fsconf[0]->history = optarg;
           break;
         case 'u':
           fsconf[0]->hasopt |= USER;
-          // printf("opt: user = %s\n", optarg);
+          if(sscanf(optarg, "%d", &fsconf[0]->user) < 1){
+            fprintf(stderr, "%s", err_invalid_argument);
+            exit(1);
+          }
           break;
         case 'g':
           fsconf[0]->hasopt |= GROUP;
-          // printf("opt: group = %s\n", optarg);
+          if(sscanf(optarg, "%d", &fsconf[0]->group) < 1){
+            fprintf(stderr, "%s", err_invalid_argument);
+            exit(1);
+          }
           break;
         case 'l':
           fsconf[0]->hasopt |= LENGTH;
-          // printf("opt: length = %s\n", optarg);
+
           break;
         case 'n':
           fsconf[0]->hasopt |= NOSCAN;
-          // printf("opt: noscan\n");
           break;
         default:
           printf("\n");
@@ -97,3 +101,8 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
 
   return 1;
 }
+
+// size_t parse_length_argument(char *arg)
+// {
+//
+// }
