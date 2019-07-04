@@ -1,7 +1,8 @@
 #include "filestat.h"
-#include <time.h>
 
 static filestat_configuration fsconf;
+static tree_descriptor *tree;
+static tree_descriptor *inode_tree;
 
 int main(int argc, char **argv)
 {
@@ -20,13 +21,14 @@ int main(int argc, char **argv)
     printf("No input file\n");
   }
 
-  init_rbtree();
+  tree = init_rbtree();
+  inode_tree = init_rbtree();
   if(HASOPT(fsconf.hasopt, STAT))
     init_stats();
   if(HASOPT(fsconf.hasopt, REPORT))
     init_report();
 
-  readOutputFile(pfsconf->output_file);
+  readOutputFile(pfsconf->output_file, tree);
 
   while(input_args != NULL){
     filestat(input_args);
@@ -38,8 +40,9 @@ int main(int argc, char **argv)
   if(HASOPT(fsconf.hasopt, REPORT))
     print_program_report(end_report());
 
-  inorder_visit();
-  writeOutputFile(pfsconf->output_file);
+  long int treesize = 0;
+  scanned_path **pathlist = inorder_visit(tree, &treesize);
+  writeOutputFile(pfsconf->output_file, pathlist, treesize);
 
   //free della memoria (?)
 }
@@ -65,11 +68,21 @@ void filestat(input_file_argument *input_args)
 
   scanned_path sp_empty;
   sp_empty.path = input_args->path;
+  sp_empty.status = SCANNED;
   sp_empty.head = NULL;
   sp_empty.tail = NULL;
   scanned_path *spbuf = (scanned_path*) malloc(sizeof(scanned_path));
   *spbuf = sp_empty;
-  spbuf = add_rbtree(spbuf);
+
+  treenode_data *pt_data = (treenode_data*) malloc(sizeof(treenode_data));
+  pt_data->type = T_SCANNED_PATH;
+  union u_treenode_data data;
+  data.file = spbuf;
+  pt_data->data = data;
+
+  pt_data = add_rbtree(tree, &pt_data);
+
+  spbuf->status |= SCANNED;
   if(spbuf->head == NULL){
     spbuf->head = fsbuf;
     spbuf->tail = fsbuf;
@@ -104,10 +117,28 @@ void filestat(input_file_argument *input_args)
     update_report(fsbuf->size);
   }
 
-  if((HASOPT(input_args->options, RECURSIVE))
-  && (S_ISDIR(fsbuf->mode))){
-    dirwalk(input_args, filestat);
+  if(HASOPT(input_args->options, RECURSIVE)){
+    if(S_ISDIR(fsbuf->mode)){
+      if(HASOPT(input_args->options, FOLLOW_LINK)){
+        treenode_data *inode_data = (treenode_data*) malloc(sizeof(treenode_data));
+        inode_data->type = T_INODE;
+        inode_data->data.inode = stbuf.st_ino;
+        if(!contains_rbtree(inode_tree, inode_data)){
+          add_rbtree(inode_tree, &inode_data);
+          dirwalk(input_args, filestat);
+        }else{
+          free(inode_data);
+        }
+      }else{
+        dirwalk(input_args, filestat);
+      }
+    }
   }
+  // if((HASOPT(input_args->options, RECURSIVE))
+  // && (S_ISDIR(fsbuf->mode))
+  // && !(HASOPT(spbuf->status, RECURSED))){
+  //   dirwalk(input_args, filestat);
+  // }
 }
 
 void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *))

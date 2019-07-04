@@ -13,7 +13,7 @@
 
 
 input_file_argument *readInputFile(char *path);
-void writeOutputFile(char *file_path);
-void readOutputFile(char *file_path);
+void writeOutputFile(char *file_path, scanned_path **pathlist, long int treesize);
+void readOutputFile(char *file_path, tree_descriptor *tree);
 
 #endif

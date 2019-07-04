@@ -1,12 +1,12 @@
 #ifndef FILESTAT
 #define FILESTAT
 
-#include "filestatConf.h"
 #include <sys/stat.h>
 #include <time.h>
 #include <sys/dir.h>
 #include "structs.h"
 
+#include "filestatConf.h"
 #include "utils.h"
 #include "rbtree.h"
 #include "print.h"

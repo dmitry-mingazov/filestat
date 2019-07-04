@@ -64,7 +64,7 @@ input_file_argument *readInputFile(char *path)
   return root;
 }
 
-void readOutputFile(char *file_path)
+void readOutputFile(char *file_path, tree_descriptor *tree)
 {
   FILE *fp;
   fp = fopen(file_path, "r");
@@ -96,6 +96,8 @@ void readOutputFile(char *file_path)
   //
   //   }
   // }
+  treenode_data *t_data;
+  union u_treenode_data data;
 
   while((bufsize = getline(&buf, &n, fp)) != -1){
     //if is path name, analyze it
@@ -105,12 +107,19 @@ void readOutputFile(char *file_path)
         tmp_path->head = NULL;
         tmp_path->tail = NULL;
         tmp_path->path = (char*) malloc(sizeof(char) * (bufsize - 1));
+        tmp_path->status = READ_OUTPUT;
         sscanf(buf, "# %s", tmp_path->path);
+
+        data.file = tmp_path;
+
+        t_data = (treenode_data*) malloc(sizeof(treenode_data));
+        t_data->type = T_SCANNED_PATH;
+        t_data->data = data;
         continue;
       }else{
         pound++;
         if(pound < 2){
-          add_rbtree(tmp_path);
+          add_rbtree(tree, &t_data);
           continue;
         }else{
           break;
@@ -143,7 +152,7 @@ void readOutputFile(char *file_path)
   }
 }
 
-void writeOutputFile(char *file_path)
+void writeOutputFile(char *file_path, scanned_path **pathlist, long int treesize)
 {
   FILE *fp;
   fp = fopen(file_path, "w");
@@ -152,11 +161,12 @@ void writeOutputFile(char *file_path)
     fprintf(stderr, "Cannot open %s, exiting. . .\n", file_path);
     exit(1);
   }
-  scanned_path *tmp_path;
+  // scanned_path *tmp_path;
   file_info *tmp_info;
-  while((tmp_path = rbnext()) != NULL){
-    fprintf(fp, "# %s\n", tmp_path->path);
-    tmp_info = tmp_path->head;
+  // while((tmp_path = rbnext()) != NULL){
+  for(int i = 0; i < treesize ; i++){
+    fprintf(fp, "# %s\n", pathlist[i]->path);
+    tmp_info = pathlist[i]->head;
     while(tmp_info !=  NULL){
       fprintf(fp, "%ld %d %d %ld %o %ld %ld %ld %ld\n",
               tmp_info->date,

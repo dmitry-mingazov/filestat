@@ -4,6 +4,15 @@
 #include <sys/types.h>
 #include <time.h>
 
+#define READ_OUTPUT 01
+#define SCANNED 02
+#define RECURSED 04
+
+#define HASOPT(OPTIONS, OPT) (OPTIONS & OPT) == OPT
+
+#define T_INODE 'I'
+#define T_SCANNED_PATH 'S'
+
 typedef struct s_input_file_argument {
   char *path;
   unsigned char options;
@@ -36,6 +45,7 @@ typedef struct s_file_info {
 
 typedef struct s_path {
   char *path;
+  unsigned char status;
   file_info *head;
   file_info *tail;
 } scanned_path;
@@ -55,5 +65,15 @@ typedef struct s_program_report {
   off_t max_size;
   double execution_time;
 } program_report;
+
+typedef union u_treenode_data {
+  scanned_path *file;
+  ino_t inode;
+};
+
+typedef struct s_treenode_data {
+  unsigned char type;
+  union u_treenode_data data;
+} treenode_data;
 
 #endif
