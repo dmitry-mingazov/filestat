@@ -30,3 +30,11 @@ void print_program_stats(program_stat *stats)
   printf("Maximum size:\t%ld\n", stats->max_size);
   printf("Minimum size:\t%ld\n", stats->min_size);
 }
+
+void print_program_report(program_report *report)
+{
+  printf("\nReport:\n");
+  printf("Number of files:\t%ld\n", report->nfiles);
+  printf("Maximum size:\t%ld\n", report->max_size);
+  printf("Execution time:\t%f ms\n", report->execution_time);
+}

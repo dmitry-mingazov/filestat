@@ -43,3 +43,29 @@ program_stat *end_stats(void)
   stats.avg_size = stats.tot_size / (stats.nfiles + stats.nlink + stats.ndirs);
   return &stats;
 }
+
+static clock_t start, end;
+static program_report report;
+
+void init_report(void)
+{
+  start = clock();
+  report.nfiles = 0;
+  report.max_size = 0;
+  report.execution_time = 0;
+}
+
+void update_report(off_t size)
+{
+  report.nfiles++;
+  if(report.max_size < size){
+    report.max_size = size;
+  }
+}
+
+program_report *end_report(void)
+{
+  end = clock();
+  report.execution_time = (((double) (end - start)) / CLOCKS_PER_SEC) * 1000;
+  return &report;
+}

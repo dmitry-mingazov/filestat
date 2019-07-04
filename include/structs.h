@@ -2,6 +2,7 @@
 #define STRUCTS
 
 #include <sys/types.h>
+#include <time.h>
 
 typedef struct s_input_file_argument {
   char *path;
@@ -48,5 +49,11 @@ typedef struct s_program_stats {
   off_t max_size;
   off_t min_size;
 } program_stat;
+
+typedef struct s_program_report {
+  unsigned long int nfiles;
+  off_t max_size;
+  double execution_time;
+} program_report;
 
 #endif

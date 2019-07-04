@@ -8,8 +8,6 @@ int main(int argc, char **argv)
   filestat_configuration *pfsconf = &fsconf;
   getOptions(argc, argv, &pfsconf);
 
-  clock_t begin = clock();
-
   /* printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);*/
 
   input_file_argument *input_args = fsconf.input_args;
@@ -25,6 +23,8 @@ int main(int argc, char **argv)
   init_rbtree();
   if(HASOPT(fsconf.hasopt, STAT))
     init_stats();
+  if(HASOPT(fsconf.hasopt, REPORT))
+    init_report();
 
   readOutputFile(pfsconf->output_file);
 
@@ -32,13 +32,14 @@ int main(int argc, char **argv)
     filestat(input_args);
     input_args = input_args->next;
   }
+
   if(HASOPT(fsconf.hasopt, STAT))
     print_program_stats(end_stats());
+  if(HASOPT(fsconf.hasopt, REPORT))
+    print_program_report(end_report());
+
   inorder_visit();
   writeOutputFile(pfsconf->output_file);
-
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
   //free della memoria (?)
 }
@@ -100,7 +101,7 @@ void filestat(input_file_argument *input_args)
   }
 
   if(HASOPT(fsconf.hasopt, REPORT)){
-
+    update_report(fsbuf->size);
   }
 
   if((HASOPT(input_args->options, RECURSIVE))
