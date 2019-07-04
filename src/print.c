@@ -18,3 +18,15 @@ void printFstat(file_info temp_file, char* filename){
 	printf("Permissions:     %s\n", perm);
   printf("-----------------------------\n");
 }
+
+void print_program_stats(program_stat *stats)
+{
+  printf("\nStats:\n");
+  printf("Number of files:\t%ld\n", stats->nfiles);
+  printf("Number of links:\t%lu\n", stats->nlink);
+  printf("Number of directories:\t%ld\n", stats->ndirs);
+  printf("Total size:\t%ld\n", stats->tot_size);
+  printf("Average size:\t%ld\n", stats->avg_size);
+  printf("Maximum size:\t%ld\n", stats->max_size);
+  printf("Minimum size:\t%ld\n", stats->min_size);
+}

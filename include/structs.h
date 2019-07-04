@@ -39,4 +39,14 @@ typedef struct s_path {
   file_info *tail;
 } scanned_path;
 
+typedef struct s_program_stats {
+  unsigned long int nfiles;
+  nlink_t nlink;
+  unsigned long int ndirs;
+  off_t tot_size;
+  off_t avg_size;
+  off_t max_size;
+  off_t min_size;
+} program_stat;
+
 #endif

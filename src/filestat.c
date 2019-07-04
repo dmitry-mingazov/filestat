@@ -23,6 +23,8 @@ int main(int argc, char **argv)
   }
 
   init_rbtree();
+  if(HASOPT(fsconf.hasopt, STAT))
+    init_stats();
 
   readOutputFile(pfsconf->output_file);
 
@@ -30,6 +32,8 @@ int main(int argc, char **argv)
     filestat(input_args);
     input_args = input_args->next;
   }
+  if(HASOPT(fsconf.hasopt, STAT))
+    print_program_stats(end_stats());
   inorder_visit();
   writeOutputFile(pfsconf->output_file);
 
@@ -84,6 +88,8 @@ void filestat(input_file_argument *input_args)
   }
 
   if(HASOPT(fsconf.hasopt, STAT)){
+    update_stats_size(fsbuf->size);
+    update_stats_type(fsbuf->mode);
     /*printf("Number of files monitored: %d\n", );
     printf("Number of links: %d\n", );
     printf("Number of directories: %d\n", );

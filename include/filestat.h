@@ -11,6 +11,7 @@
 #include "rbtree.h"
 #include "print.h"
 #include "rw_file.h"
+#include "reports.h"
 
 void filestat(input_file_argument *input_args);
 file_info statcpy(struct stat *stbuf);
