@@ -38,6 +38,14 @@ input_file_argument *readInputFile(char *path)
     curr->path = malloc(sizeof(char) * bufsize);
     if(sscanf(buf, "%s %c %c", curr->path, &opts[0], &opts[1]) < 1){
       //if this line is empty or has only "space" characters, ignore it
+      //free allocated memory
+      free(curr->path);
+      free(curr);
+      curr = NULL;
+      //if prev doesn't exist, it must be the first iteration
+      if(prev == NULL){
+        root = NULL;
+      }
       continue;
       // fprintf(stderr, "SSCANF ERROR\n");
     }
@@ -53,7 +61,7 @@ input_file_argument *readInputFile(char *path)
         case 0:
           break;
         default:
-          fprintf(stderr, "Wrong input file format, exiting. . .\n");
+          fprintf(stderr, "rwfile: wrong input file format, exiting. . .\n");
           exit(1);
       }
     }
@@ -61,6 +69,12 @@ input_file_argument *readInputFile(char *path)
   prev = curr;
 
   }
+
+  if(root == NULL){
+    fprintf(stderr, "Empty input file, exiting. . .\n");
+    exit(1);
+  }
+
   return root;
 }
 

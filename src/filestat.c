@@ -9,20 +9,11 @@ int main(int argc, char **argv)
   filestat_configuration *pfsconf = &fsconf;
   getOptions(argc, argv, &pfsconf);
 
-  /* printf("HASOPT FROM MAIN: %d\n",fsconf.hasopt);*/
-
   input_file_argument *input_args = fsconf.input_args;
-
-  /* printf("main: root path -> %s\n", input_args->path);*/
-  if(fsconf.input_args == NULL){
-    printf("FSCONF.input_args NULL\n");
-  }
-  if(input_args == NULL){
-    printf("No input file\n");
-  }
 
   tree = init_rbtree();
   inode_tree = init_rbtree();
+
   if(HASOPT(fsconf.hasopt, STAT))
     init_stats();
   if(HASOPT(fsconf.hasopt, REPORT))
@@ -30,19 +21,28 @@ int main(int argc, char **argv)
 
   readOutputFile(pfsconf->output_file, tree);
 
-  while(input_args != NULL){
-    filestat(input_args);
-    input_args = input_args->next;
+  long int treesize = 0;
+
+  if(!(HASOPT(fsconf.hasopt, NOSCAN))){
+    while(input_args != NULL){
+      filestat(input_args);
+      input_args = input_args->next;
+    }
   }
+
+  scanned_path **pathlist = inorder_visit(tree, &treesize);
+
+  if(HASOPT(fsconf.hasopt, NOSCAN)){
+    print_output_file(pathlist, treesize);
+  }else{
+    writeOutputFile(pfsconf->output_file, pathlist, treesize);
+  }
+
 
   if(HASOPT(fsconf.hasopt, STAT))
     print_program_stats(end_stats());
   if(HASOPT(fsconf.hasopt, REPORT))
     print_program_report(end_report());
-
-  long int treesize = 0;
-  scanned_path **pathlist = inorder_visit(tree, &treesize);
-  writeOutputFile(pfsconf->output_file, pathlist, treesize);
 
   //free della memoria (?)
 }
