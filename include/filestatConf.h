@@ -28,6 +28,6 @@
 #define DEFAULT_INPUT_FILE "filestat.in"
 #define DEFAULT_OUTPUT_FILE "filestat.db"
 
-int getOptions(int argc, char *argv[], filestat_configuration **fsconf);
+int getOptions(int argc, char *argv[], filestat_configuration *fsconf);
 
 #endif

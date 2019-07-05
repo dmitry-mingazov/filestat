@@ -1,3 +1,25 @@
+/*************************************************************************
+                           filestat
+            UNICAM - Scuola di scienze e tecnologie
+                   Facolta' di informatica
+
+            Corso di Sistemi Operativi Laboratorio
+
+  Copyright (C) 2019  Dmitry Mingazov, Beatrice Pucci Sisti
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.                                *
+*************************************************************************/
 #include "rbtree.h"
 
 struct s_node s_nullnode;
@@ -8,7 +30,6 @@ treenode *root = NULL;
 static treenode *newtreenode(treenode_data *data);
 static void rotateleft(treenode **root, treenode *x);
 static void rotateright(treenode **root, treenode *x);
-static void rbinsert(tree_descriptor *tree, treenode_data **data);
 static void insertfixup(treenode **root, treenode *newnode);
 static int treenode_data_compare(treenode_data *x, treenode_data *y);
 static void treenode_data_free(treenode_data *data);
@@ -29,11 +50,6 @@ tree_descriptor *init_rbtree(void)
   return tree;
 }
 
-void add_rbtree(tree_descriptor *tree, treenode_data **data)
-{
-  rbinsert(tree, data);
-}
-
 treenode_data *get_data_rbtree(tree_descriptor *tree, treenode_data *data)
 {
   treenode *x = tree->root;
@@ -50,7 +66,7 @@ treenode_data *get_data_rbtree(tree_descriptor *tree, treenode_data *data)
   return NULL;
 }
 
-static treenode *newtreenode(treenode_data *data)
+treenode *newtreenode(treenode_data *data)
 {
   treenode *temp = (treenode*) malloc(sizeof(treenode));
   if(temp == NULL){
@@ -66,7 +82,7 @@ static treenode *newtreenode(treenode_data *data)
   return temp;
 }
 
-static void rotateleft(treenode **root, treenode *x)
+void rotateleft(treenode **root, treenode *x)
 {
   treenode *y = x->right;
   // printf("-rotating left\n");
@@ -84,7 +100,7 @@ static void rotateleft(treenode **root, treenode *x)
   x->parent = y;
 }
 
-static void rotateright(treenode **root, treenode *x)
+void rotateright(treenode **root, treenode *x)
 {
   treenode *y = x->left;
   // printf("-rotating right\n");
@@ -102,7 +118,7 @@ static void rotateright(treenode **root, treenode *x)
   x->parent = y;
 }
 
-static void rbinsert(tree_descriptor *tree, treenode_data **data)
+void add_rbtree(tree_descriptor *tree, treenode_data **data)
 {
   treenode *newnode = newtreenode(*data);
   treenode *y = nullnode;
@@ -142,7 +158,7 @@ static void rbinsert(tree_descriptor *tree, treenode_data **data)
   insertfixup(&tree->root, newnode);
 }
 
-static void insertfixup(treenode **root, treenode *newnode)
+void insertfixup(treenode **root, treenode *newnode)
 {
   treenode *temp;
 

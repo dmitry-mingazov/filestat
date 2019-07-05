@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <sys/stat.h>
 #include "structs.h"
-#include "utils.h"
 
 void printFstat(file_info temp_file, char *filename);
 void print_program_stats(program_stat *stat);
