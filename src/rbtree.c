@@ -20,6 +20,10 @@ static void treenode_data_free(treenode_data *data);
 tree_descriptor *init_rbtree(void)
 {
   tree_descriptor *tree = (tree_descriptor*) malloc(sizeof(tree_descriptor));
+  if(tree == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
   tree->root = nullnode;
   tree->size = 0;
   return tree;
@@ -49,6 +53,10 @@ treenode_data *get_data_rbtree(tree_descriptor *tree, treenode_data *data)
 static treenode *newtreenode(treenode_data *data)
 {
   treenode *temp = (treenode*) malloc(sizeof(treenode));
+  if(temp == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
   temp->data = data;
   temp->color = RED;
   temp->left = NULL;
@@ -216,14 +224,25 @@ int treenode_data_compare(treenode_data *x, treenode_data *y)
 treenode_data *filepath_to_treenode_data(char *path)
 {
   scanned_path *sp_empty = (scanned_path*) malloc(sizeof(scanned_path));
+  if(sp_empty == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
   //allocate memory to copy the path
-  sp_empty->path = (char*) malloc(sizeof(char) * strlen(path) + 1);
+  if((sp_empty->path = (char*) malloc(sizeof(char) * strlen(path) + 1)) == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
   strcpy(sp_empty->path, path);
   //initialize head and tail to NULL
   sp_empty->head = NULL;
   sp_empty->tail = NULL;
   //create and allocate memory for new treenode_data
   treenode_data *pt_data = (treenode_data*) malloc(sizeof(treenode_data));
+  if(pt_data == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
   //set its type to scanned_path
   pt_data->type = T_SCANNED_PATH;
   //create new union data
@@ -232,6 +251,20 @@ treenode_data *filepath_to_treenode_data(char *path)
   data.file = sp_empty;
   //copy union into treenode_data
   pt_data->data = data;
+
+  return pt_data;
+}
+
+treenode_data *inode_to_treenode_data(ino_t inode)
+{
+  treenode_data *pt_data = (treenode_data*) malloc(sizeof(treenode_data));
+  if(pt_data == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
+
+  pt_data->type = T_INODE;
+  pt_data->data.inode = inode;
 
   return pt_data;
 }
@@ -259,17 +292,22 @@ static long int count;
 
 static void inorder(treenode *root, scanned_path **pathlist);
 
-scanned_path **inorder_visit(tree_descriptor *tree, long int *size)
+scanned_path **path_inorder(tree_descriptor *tree, long int *size)
 {
   if(tree->root == nullnode){
     return NULL;
   }
   // printf("SIZE: %ld\n",thistree->size);
   scanned_path **pathlist = (scanned_path**) malloc(sizeof(scanned_path) * tree->size);
+  if(pathlist == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
   count = 0;
   inorder(tree->root, pathlist);
   *size = count;
   count = 0;
+  tree->root = nullnode;
   return pathlist;
   // int i = thistree->size;
   // while(--i >= 0){
@@ -297,4 +335,6 @@ void inorder(treenode *root, scanned_path **pathlist)
   if(root->right != nullnode){
     inorder(root->right, pathlist);
   }
+  free(root->data);
+  free(root);
 }

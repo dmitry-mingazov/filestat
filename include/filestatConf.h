@@ -19,6 +19,10 @@
 #define GROUP 0100
 #define LENGTH 0200
 
+#define FILTER 0340
+
+#define HAS_FILTER(OPTIONS, FILTER) (OPTIONS & FILTER) > 0
+
 #define DEFAULT_INPUT_FILE "filestat.in"
 #define DEFAULT_OUTPUT_FILE "filestat.db"
 

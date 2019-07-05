@@ -29,7 +29,8 @@ tree_descriptor *init_rbtree(void);
 treenode_data *get_data_rbtree(tree_descriptor *tree, treenode_data *data);
 void add_rbtree(tree_descriptor *tree, treenode_data **data);
 treenode_data *filepath_to_treenode_data(char *path);
-scanned_path **inorder_visit(tree_descriptor *tree, long int *size);
+treenode_data *inode_to_treenode_data(ino_t inode);
+scanned_path **path_inorder(tree_descriptor *tree, long int *size);
 // scanned_path *rbnext(tree_descriptor *tree)
 
 

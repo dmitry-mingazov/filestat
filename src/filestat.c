@@ -10,6 +10,7 @@ int main(int argc, char **argv)
   getOptions(argc, argv, &pfsconf);
 
   input_file_argument *input_args = fsconf.input_args;
+  input_file_argument *prev = input_args;
 
   tree = init_rbtree();
   inode_tree = init_rbtree();
@@ -36,11 +37,14 @@ int main(int argc, char **argv)
   if(!(HASOPT(fsconf.hasopt, NOSCAN))){
     while(input_args != NULL){
       filestat(input_args);
+      prev = input_args;
       input_args = input_args->next;
+      free(prev->path);
+      free(prev);
     }
   }
 
-  scanned_path **pathlist = inorder_visit(tree, &treesize);
+  scanned_path **pathlist = path_inorder(tree, &treesize);
 
   if(HASOPT(fsconf.hasopt, NOSCAN)){
     print_output_file(pathlist, treesize);
@@ -53,24 +57,26 @@ int main(int argc, char **argv)
     print_program_stats(end_stats());
   if(HASOPT(fsconf.hasopt, REPORT))
     print_program_report(end_report());
-
-  //free della memoria (?)
 }
 
 void filestat(input_file_argument *input_args)
 {
   struct stat stbuf;
   file_info *fsbuf = (file_info*) malloc(sizeof(file_info));
+  if(fsbuf == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
 
   if(HASOPT(input_args->options, FOLLOW_LINK)){
     if(stat(input_args->path, &stbuf) == -1){
       fprintf(stderr, "filestat: can't access to %s\n", input_args->path);
-      return ;
+      return;
     }
   }else{
     if(lstat(input_args->path, &stbuf) == -1){
       fprintf(stderr, "filestat: can't access to %s\n", input_args->path);
-      return ;
+      return;
     }
   }
 
@@ -89,12 +95,25 @@ void filestat(input_file_argument *input_args)
     spbuf->tail = fsbuf;
   }
 
-  /* printf("filestat: checked %s\n", input_args->path);
-  // printf("---filestat: size %ld\n", fsbuf.size);
-  // char perm[10];
-  // parse_mode(fsbuf.mode, perm);
-  // printf("---filestat: permissions %o\n", READABLE_PERMS(fsbuf.mode));
-  // printf("---filestat: permissions %s\n", perm);*/
+  if(HAS_FILTER(fsconf.hasopt, FILTER)){
+    int is_printable = 0;
+    if(HASOPT(fsconf.hasopt, USER)){
+      if(fsbuf->uid == fsconf.user)
+        is_printable = 1;
+    }
+    if(HASOPT(fsconf.hasopt, GROUP)){
+      if(fsbuf->gid == fsconf.group)
+        is_printable = 1;
+    }
+    if(HASOPT(fsconf.hasopt, LENGTH)){
+      if((fsbuf->size > fsconf.length_min)
+      && (fsbuf->size < fsconf.length_max))
+        is_printable = 1;
+    }
+    if(is_printable)
+      printFstat(*fsbuf, input_args->path);
+  }
+
   if(HASOPT(fsconf.hasopt, VERBOSE)){
 	   printFstat(*fsbuf, input_args->path);
   }
@@ -102,13 +121,6 @@ void filestat(input_file_argument *input_args)
   if(HASOPT(fsconf.hasopt, STAT)){
     update_stats_size(fsbuf->size);
     update_stats_type(fsbuf->mode);
-    /*printf("Number of files monitored: %d\n", );
-    printf("Number of links: %d\n", );
-    printf("Number of directories: %d\n", );
-    printf("Tot files dimension: %ld\n", );
-    printf("Avg file dimension: %ld\n", );
-    printf("Max file dimension: %ld\n", );
-    printf("Min file dimension: %ld\n", );*/
   }
 
   if(HASOPT(fsconf.hasopt, REPORT)){
@@ -118,9 +130,7 @@ void filestat(input_file_argument *input_args)
   if(HASOPT(input_args->options, RECURSIVE)){
     if(S_ISDIR(fsbuf->mode)){
       if(HASOPT(input_args->options, FOLLOW_LINK)){
-        treenode_data *inode_data = (treenode_data*) malloc(sizeof(treenode_data));
-        inode_data->type = T_INODE;
-        inode_data->data.inode = stbuf.st_ino;
+        treenode_data *inode_data = inode_to_treenode_data(stbuf.st_ino);
         //if tree doesn't contain this path
         if(get_data_rbtree(inode_tree, inode_data) == NULL){
           add_rbtree(inode_tree, &inode_data);
@@ -149,7 +159,6 @@ void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *))
   DIR *dfd;
 
   dirpath = dir->path;
-  // printf("Dirwalk called and dirpath is: %s\n", dirpath);
 
   if((dfd = opendir(dir->path)) == NULL){
     fprintf(stderr, "dirwalk: can't open %s\n", dir->path);
@@ -162,8 +171,12 @@ void dirwalk(input_file_argument *dir, void (*fcn)(input_file_argument *))
     if(strcmp(dp->d_name, ".") == 0
     || strcmp(dp->d_name, "..") == 0)
       continue;
-    filepath = malloc(sizeof(char) * (strlen(dirpath) + strlen(dp->d_name) + 2));
+    if((filepath = malloc(sizeof(char) * (strlen(dirpath) + strlen(dp->d_name) + 2))) == NULL){
+      fprintf(stderr, "%s", MALLOC_ERROR);
+      exit(1);
+    }
     sprintf(filepath, "%s/%s", dirpath, dp->d_name);
+    // free(dir->path);
     dir->path=filepath;
     (*fcn)(dir);
   }

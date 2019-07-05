@@ -22,10 +22,16 @@ input_file_argument *readInputFile(char *path)
 
   while((bufsize = getline(&buf, &n, fp)) != -1){
     if(root == NULL){
-      root = malloc(sizeof(input_file_argument));
+      if((root = malloc(sizeof(input_file_argument))) == NULL){
+        fprintf(stderr, "%s", MALLOC_ERROR);
+        exit(1);
+      }
       curr = root;
     }else{
-      curr = malloc(sizeof(input_file_argument));
+      if((curr = malloc(sizeof(input_file_argument))) == NULL){
+        fprintf(stderr, "%s", MALLOC_ERROR);
+        exit(1);
+      }
       prev->next = curr;
     }
 
@@ -35,7 +41,10 @@ input_file_argument *readInputFile(char *path)
     curr->options = 00;
     //TODO: make it upgradable
     // printf("Buffer: %s", buf);
-    curr->path = malloc(sizeof(char) * bufsize);
+    if((curr->path = malloc(sizeof(char) * bufsize)) == NULL){
+      fprintf(stderr, "%s", MALLOC_ERROR);
+      exit(1);
+    }
     if(sscanf(buf, "%s %c %c", curr->path, &opts[0], &opts[1]) < 1){
       //if this line is empty or has only "space" characters, ignore it
       //free allocated memory
@@ -119,7 +128,10 @@ void readOutputFile(char *file_path, tree_descriptor *tree)
     if(buf[0] == '#'){
       if(buf[1] != '#'){
 
-        filepath = (char*) malloc(sizeof(char) * (bufsize - 1));
+        if((filepath = (char*) malloc(sizeof(char) * (bufsize - 1)))== NULL){
+          fprintf(stderr, "%s", MALLOC_ERROR);
+          exit(1);
+        }
         sscanf(buf, "# %s", filepath);
 
         t_data = filepath_to_treenode_data(filepath);
@@ -138,7 +150,10 @@ void readOutputFile(char *file_path, tree_descriptor *tree)
       }
     }
     pound = 0;
-    tmp_info = (file_info*) malloc(sizeof(file_info));
+    if((tmp_info = (file_info*) malloc(sizeof(file_info))) == NULL){
+      fprintf(stderr, "%s", MALLOC_ERROR);
+      exit(1);
+    }
     if(sscanf(buf, "%ld %d %d %ld %o %ld %ld %ld %ld\n",
       &tmp_info->date,
       &tmp_info->uid,
@@ -191,8 +206,11 @@ void writeOutputFile(char *file_path, scanned_path **pathlist, long int treesize
               tmp_info->nlink);
       tmp_info = tmp_info->next;
     }
+    free(pathlist[i]->path);
+    free(pathlist[i]);
     fprintf(fp, "###\n");
   }
+  free(pathlist);
   fprintf(fp, "###\n");
   fclose(fp);
 

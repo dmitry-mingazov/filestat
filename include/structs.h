@@ -9,6 +9,8 @@
 #define T_INODE 'I'
 #define T_SCANNED_PATH 'S'
 
+#define MALLOC_ERROR "[Error]: Out of memory\n"
+
 typedef struct s_input_file_argument {
   char *path;
   unsigned char options;

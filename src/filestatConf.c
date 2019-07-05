@@ -11,7 +11,10 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
   fsconf[0]->hasopt = 00;
   fsconf[0]->output_file = DEFAULT_OUTPUT_FILE;
 
-  fsconf[0]->input_args = malloc(sizeof(input_file_argument));
+  if((fsconf[0]->input_args = malloc(sizeof(input_file_argument))) == NULL){
+    fprintf(stderr, "%s", MALLOC_ERROR);
+    exit(1);
+  }
 
   char *err_invalid_argument = "Passed invalid argument\n";
 
