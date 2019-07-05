@@ -81,8 +81,8 @@ void filestat(input_file_argument *input_args)
   pt_data->data = data;
 
   pt_data = add_rbtree(tree, &pt_data);
-
-  spbuf->status |= SCANNED;
+  spbuf = pt_data->data.file;
+  // spbuf->status |= SCANNED;
   if(spbuf->head == NULL){
     spbuf->head = fsbuf;
     spbuf->tail = fsbuf;
