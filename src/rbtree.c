@@ -5,12 +5,13 @@ treenode *nullnode = &s_nullnode;
 treenode *root = NULL;
 
 
-static treenode *newtreenode(treenode_data data);
+static treenode *newtreenode(treenode_data *data);
 static void rotateleft(treenode **root, treenode *x);
 static void rotateright(treenode **root, treenode *x);
-static treenode_data *rbinsert(tree_descriptor *tree, treenode_data **data);
+static void rbinsert(tree_descriptor *tree, treenode_data **data);
 static void insertfixup(treenode **root, treenode *newnode);
 static int treenode_data_compare(treenode_data *x, treenode_data *y);
+static void treenode_data_free(treenode_data *data);
 
 
 // static tree_descriptor this;
@@ -24,28 +25,28 @@ tree_descriptor *init_rbtree(void)
   return tree;
 }
 
-treenode_data *add_rbtree(tree_descriptor *tree, treenode_data **data)
+void add_rbtree(tree_descriptor *tree, treenode_data **data)
 {
-  return rbinsert(tree, data);
+  rbinsert(tree, data);
 }
 
-int contains_rbtree(tree_descriptor *tree, treenode_data *data)
+treenode_data *get_data_rbtree(tree_descriptor *tree, treenode_data *data)
 {
   treenode *x = tree->root;
   int compare;
   while(x != nullnode){
-    compare = treenode_data_compare(data, &x->data);
+    compare = treenode_data_compare(data, x->data);
     if(compare < 0)
       x = x->left;
     else if(compare > 0)
       x = x->right;
     else
-      return 1;
+      return x->data;
   }
-  return 0;
+  return NULL;
 }
 
-static treenode *newtreenode(treenode_data data)
+static treenode *newtreenode(treenode_data *data)
 {
   treenode *temp = (treenode*) malloc(sizeof(treenode));
   temp->data = data;
@@ -93,9 +94,9 @@ static void rotateright(treenode **root, treenode *x)
   x->parent = y;
 }
 
-static treenode_data *rbinsert(tree_descriptor *tree, treenode_data **data)
+static void rbinsert(tree_descriptor *tree, treenode_data **data)
 {
-  treenode *newnode = newtreenode(**data);
+  treenode *newnode = newtreenode(*data);
   treenode *y = nullnode;
   treenode *x;
   x = tree->root;
@@ -103,14 +104,19 @@ static treenode_data *rbinsert(tree_descriptor *tree, treenode_data **data)
   // printf("rbinsert: inserting %s\n", newnode->file->path);
   while(x != nullnode){
     y = x;
-    compare = treenode_data_compare(&newnode->data, &x->data);
+    compare = treenode_data_compare(newnode->data, x->data);
     // printf("%s %d %s\n", newnode->file->path, compare, x->file->path);
     if(compare < 0)
       x = x->left;
     else if(compare > 0)
       x = x->right;
-    else
-      return &x->data;
+    else{
+      treenode_data_free(*data);
+      free(newnode);
+      *data = x->data;
+      return;
+    }
+
   }
   tree->size++;
   newnode->parent = y;
@@ -126,7 +132,6 @@ static treenode_data *rbinsert(tree_descriptor *tree, treenode_data **data)
 
   // printf("rbinsert: inserted\n");
   insertfixup(&tree->root, newnode);
-  return &newnode->data;
 }
 
 static void insertfixup(treenode **root, treenode *newnode)
@@ -190,18 +195,6 @@ int treenode_data_compare(treenode_data *x, treenode_data *y)
     fprintf(stderr, "rbtree: Fatal error, different types of node data found\n");
     exit(1);
   }
-  // if(x->type == T_SCANNED_PATH ){
-  //   return strcmp(x->data.file->path, y->data.file->path);
-  // }
-  // if(y->type == T_INODE){
-  //   if(x->data->data.inode > y->data->data.inode){
-  //     return 1;
-  //   }else if(x->data->data.inode < y->data->data.inode){
-  //     return -1;
-  //   }else{
-  //     return 0;
-  //   }
-  // }
 
   switch(x->type){
     case T_SCANNED_PATH:
@@ -220,13 +213,51 @@ int treenode_data_compare(treenode_data *x, treenode_data *y)
   }
 }
 
+treenode_data *filepath_to_treenode_data(char *path)
+{
+  scanned_path *sp_empty = (scanned_path*) malloc(sizeof(scanned_path));
+  //allocate memory to copy the path
+  sp_empty->path = (char*) malloc(sizeof(char) * strlen(path) + 1);
+  strcpy(sp_empty->path, path);
+  //initialize head and tail to NULL
+  sp_empty->head = NULL;
+  sp_empty->tail = NULL;
+  //create and allocate memory for new treenode_data
+  treenode_data *pt_data = (treenode_data*) malloc(sizeof(treenode_data));
+  //set its type to scanned_path
+  pt_data->type = T_SCANNED_PATH;
+  //create new union data
+  u_data data;
+  //copy new scanned_path struct pointer into union
+  data.file = sp_empty;
+  //copy union into treenode_data
+  pt_data->data = data;
+
+  return pt_data;
+}
+
+void treenode_data_free(treenode_data *data)
+{
+  if(data == NULL)
+    return;
+
+  switch(data->type){
+    case T_SCANNED_PATH:
+      free(data->data.file->path);
+      free(data);
+      break;
+    case T_INODE:
+      free(data);
+      break;
+    default:
+    fprintf(stderr, "rbtree: Fatal error, unknown type of data\n");
+    exit(1);
+  }
+}
+
 static long int count;
 
 static void inorder(treenode *root, scanned_path **pathlist);
-
-static struct s_inorder {
-
-};
 
 scanned_path **inorder_visit(tree_descriptor *tree, long int *size)
 {
@@ -261,7 +292,7 @@ void inorder(treenode *root, scanned_path **pathlist)
   if(root->left != nullnode){
     inorder(root->left, pathlist);
   }
-  pathlist[count] = root->data.data.file;
+  pathlist[count] = root->data->data.file;
   count++;
   if(root->right != nullnode){
     inorder(root->right, pathlist);

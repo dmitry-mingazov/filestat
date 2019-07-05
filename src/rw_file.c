@@ -110,25 +110,22 @@ void readOutputFile(char *file_path, tree_descriptor *tree)
   //
   //   }
   // }
-  treenode_data *t_data;
-  union u_treenode_data data;
+  treenode_data *t_data = NULL;
+
+  char *filepath;
 
   while((bufsize = getline(&buf, &n, fp)) != -1){
     //if is path name, analyze it
     if(buf[0] == '#'){
       if(buf[1] != '#'){
-        tmp_path = (scanned_path*) malloc(sizeof(scanned_path));
-        tmp_path->head = NULL;
-        tmp_path->tail = NULL;
-        tmp_path->path = (char*) malloc(sizeof(char) * (bufsize - 1));
-        tmp_path->status = READ_OUTPUT;
-        sscanf(buf, "# %s", tmp_path->path);
 
-        data.file = tmp_path;
+        filepath = (char*) malloc(sizeof(char) * (bufsize - 1));
+        sscanf(buf, "# %s", filepath);
 
-        t_data = (treenode_data*) malloc(sizeof(treenode_data));
-        t_data->type = T_SCANNED_PATH;
-        t_data->data = data;
+        t_data = filepath_to_treenode_data(filepath);
+        tmp_path = t_data->data.file;
+
+        free(filepath);
         continue;
       }else{
         pound++;

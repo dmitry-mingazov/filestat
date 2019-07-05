@@ -21,6 +21,16 @@ int main(int argc, char **argv)
 
   readOutputFile(pfsconf->output_file, tree);
 
+  if(HASOPT(fsconf.hasopt, HISTORY)){
+    treenode_data *history_data = filepath_to_treenode_data(fsconf.history);
+    history_data = get_data_rbtree(tree, history_data);
+    if(history_data != NULL){
+      print_history_of_file(history_data->data.file);
+    }else{
+      fprintf(stderr, "filestat: no history found for %s\n", fsconf.history);
+    }
+  }
+
   long int treesize = 0;
 
   if(!(HASOPT(fsconf.hasopt, NOSCAN))){
@@ -66,21 +76,9 @@ void filestat(input_file_argument *input_args)
 
   *fsbuf = statcpy(&stbuf);
 
-  scanned_path sp_empty;
-  sp_empty.path = input_args->path;
-  sp_empty.status = SCANNED;
-  sp_empty.head = NULL;
-  sp_empty.tail = NULL;
-  scanned_path *spbuf = (scanned_path*) malloc(sizeof(scanned_path));
-  *spbuf = sp_empty;
-
-  treenode_data *pt_data = (treenode_data*) malloc(sizeof(treenode_data));
-  pt_data->type = T_SCANNED_PATH;
-  union u_treenode_data data;
-  data.file = spbuf;
-  pt_data->data = data;
-
-  pt_data = add_rbtree(tree, &pt_data);
+  treenode_data *pt_data = filepath_to_treenode_data(input_args->path);
+  scanned_path *spbuf;
+  add_rbtree(tree, &pt_data);
   spbuf = pt_data->data.file;
   // spbuf->status |= SCANNED;
   if(spbuf->head == NULL){
@@ -123,7 +121,8 @@ void filestat(input_file_argument *input_args)
         treenode_data *inode_data = (treenode_data*) malloc(sizeof(treenode_data));
         inode_data->type = T_INODE;
         inode_data->data.inode = stbuf.st_ino;
-        if(!contains_rbtree(inode_tree, inode_data)){
+        //if tree doesn't contain this path
+        if(get_data_rbtree(inode_tree, inode_data) == NULL){
           add_rbtree(inode_tree, &inode_data);
           dirwalk(input_args, filestat);
         }else{

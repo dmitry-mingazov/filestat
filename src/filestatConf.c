@@ -2,15 +2,6 @@
 
 static off_t parse_length_argument(char *arg);
 
-void initFilestat(int argc, char *argv[], filestat_configuration *fsconf)
-{
-  getOptions(argc, argv, fsconf);
-
-
-
-}
-
-
 int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
 {
 
@@ -97,7 +88,6 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
   else{
     fsconf[0]->input_args = readInputFile(DEFAULT_INPUT_FILE);
   }
-  char c = fsconf[0]->hasopt;
 
   return 1;
 }

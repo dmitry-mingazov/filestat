@@ -13,7 +13,7 @@
 #define INSERTED 1
 
 typedef struct s_node{
-  treenode_data data;
+  treenode_data *data;
   char color;
   struct s_node *left;
   struct s_node *right;
@@ -26,8 +26,9 @@ typedef struct tree_descriptor{
 }tree_descriptor;
 
 tree_descriptor *init_rbtree(void);
-int contains_rbtree(tree_descriptor *tree, treenode_data *data);
-treenode_data *add_rbtree(tree_descriptor *tree, treenode_data **data);
+treenode_data *get_data_rbtree(tree_descriptor *tree, treenode_data *data);
+void add_rbtree(tree_descriptor *tree, treenode_data **data);
+treenode_data *filepath_to_treenode_data(char *path);
 scanned_path **inorder_visit(tree_descriptor *tree, long int *size);
 // scanned_path *rbnext(tree_descriptor *tree)
 

@@ -1,21 +1,10 @@
 #include "print.h"
 
+static void print_file_info(file_info *info);
+
 void printFstat(file_info temp_file, char* filename){
   printf(" %s\n\n", filename);
-	printf("Acquired in date: %s \n",ctime(&temp_file.date));
-	printf("Size:            %ld \n",temp_file.size);
-	printf("Mode file:       %o \n",temp_file.mode);
-	printf("Access time:     %s",ctime(&temp_file.atime));
-	printf("Modified time:   %s",ctime(&temp_file.mtime));
-	printf("Change time:     %s",ctime(&temp_file.ctime));
-	printf("Number of links: %lu \n",temp_file.nlink);
-	printf("User ID:         %d \n",temp_file.uid);
-	printf("Group ID:        %d \n",temp_file.gid);
-
-  char perm[10];
-
-	parse_mode(temp_file.mode, perm);
-	printf("Permissions:     %s\n", perm);
+	print_file_info(&temp_file);
   printf("-----------------------------\n");
 }
 
@@ -42,26 +31,44 @@ void print_program_report(program_report *report)
 void print_output_file(scanned_path **pathlist, long int treesize)
 {
   file_info *tmp_info;
-  char perm[10];
 
   for(int i = 0; i < treesize; i++){
     printf("\n%s\n", pathlist[i]->path);
     tmp_info = pathlist[i]->head;
     while(tmp_info != NULL){
-      printf("Acquired in date: %s \n",ctime(&tmp_info->date));
-      printf("Size:            %ld \n",tmp_info->size);
-      printf("Mode file:       %o \n",tmp_info->mode);
-      printf("Access time:     %s",ctime(&tmp_info->atime));
-      printf("Modified time:   %s",ctime(&tmp_info->mtime));
-      printf("Change time:     %s",ctime(&tmp_info->ctime));
-      printf("Number of links: %lu \n",tmp_info->nlink);
-      printf("User ID:         %d \n",tmp_info->uid);
-      printf("Group ID:        %d \n",tmp_info->gid);
-
-    	parse_mode(tmp_info->mode, perm);
-    	printf("Permissions:     %s\n\n", perm);
+      print_file_info(tmp_info);
       tmp_info = tmp_info->next;
     }
     printf("-----------------------------\n");
   }
+}
+
+void print_history_of_file(scanned_path *file)
+{
+  file_info *tmp_info = file->head;
+  printf("History of %s:\n", file->path);
+
+  while(tmp_info != NULL){
+    print_file_info(tmp_info);
+    tmp_info = tmp_info->next;
+  }
+  printf("-----------------------------\n");
+}
+
+void print_file_info(file_info *info)
+{
+  printf("\nAcquired in date: %s",ctime(&info->date));
+	printf("Size:            %ld \n",info->size);
+	printf("Mode file:       %o \n",info->mode);
+	printf("Access time:     %s",ctime(&info->atime));
+	printf("Modified time:   %s",ctime(&info->mtime));
+	printf("Change time:     %s",ctime(&info->ctime));
+	printf("Number of links: %lu \n",info->nlink);
+	printf("User ID:         %d \n",info->uid);
+	printf("Group ID:        %d \n",info->gid);
+
+  char perm[10];
+
+	parse_mode(info->mode, perm);
+	printf("Permissions:     %s\n", perm);
 }
