@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
+#include <limits.h>
+#include <math.h>
 #include "structs.h"
 #include "rw_file.h"
 

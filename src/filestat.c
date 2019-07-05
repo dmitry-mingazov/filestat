@@ -107,8 +107,9 @@ void filestat(input_file_argument *input_args)
     }
     if(HASOPT(fsconf.hasopt, LENGTH)){
       if((fsbuf->size > fsconf.length_min)
-      && (fsbuf->size < fsconf.length_max))
+      && (fsbuf->size < fsconf.length_max)){
         is_printable = 1;
+      }
     }
     if(is_printable)
       printFstat(*fsbuf, input_args->path);

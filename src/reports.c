@@ -10,7 +10,7 @@ void init_stats(void)
   stats.tot_size = 0;
   stats.avg_size = 0;
   stats.max_size = 0;
-  stats.min_size = pow(2, (sizeof(stats.min_size) * 8)) - 1;
+  stats.min_size = pow(2, (sizeof(stats.min_size) * 8) -2);
 }
 
 void update_stats_type(mode_t mode)

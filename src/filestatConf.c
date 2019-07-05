@@ -1,6 +1,7 @@
 #include "filestatConf.h"
 
-static off_t parse_length_argument(char *arg);
+static void parse_length_argument(char *arg, off_t *min, off_t *max);
+static char *err_invalid_argument = "Passed invalid argument\n";
 
 int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
 {
@@ -16,7 +17,7 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
     exit(1);
   }
 
-  char *err_invalid_argument = "Passed invalid argument\n";
+
 
   int nextOpt;
   int optIndex = 0;
@@ -64,7 +65,7 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
           break;
         case 'l':
           fsconf[0]->hasopt |= LENGTH;
-
+          parse_length_argument(optarg, &fsconf[0]->length_min, &fsconf[0]->length_max);
           break;
         case 'n':
           fsconf[0]->hasopt |= NOSCAN;
@@ -74,6 +75,7 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
           exit(1);
     }
   }
+  // printf("MIN: %ld MAX: %ld\n", fsconf[0]->length_min, fsconf[0]->length_max);
   // printf("-------------\n");
   // printf("-----------\nOptIndex: %d\n", optind);
   if(optind < argc){
@@ -95,7 +97,40 @@ int getOptions(int argc, char *argv[], filestat_configuration **fsconf)
   return 1;
 }
 
-// size_t parse_length_argument(char *arg)
-// {
-//
-// }
+void parse_length_argument(char *arg, off_t *min, off_t *max)
+{
+  char *str = arg;
+  if(arg[0] == ':'){
+    *min = 0;
+    if(sscanf(arg, ":%ld", max) < 1){
+      fprintf(stderr, "%s", err_invalid_argument);
+      exit(1);
+    }
+    return;
+  }
+  if(arg[strlen(arg)-1] == ':'){
+    *max =  pow(2, (sizeof(off_t) * 8) - 2);
+    if(sscanf(arg, "%ld:", min) < 1){
+      fprintf(stderr, "%s", err_invalid_argument);
+      exit(1);
+    }
+    return;
+  }
+
+  while(*str != '\0' && *str != ':')
+    str++;
+
+  if(*str == ':'){
+    if(sscanf(arg, "%ld:%ld", min, max) < 2){
+      fprintf(stderr, "%s", err_invalid_argument);
+      exit(1);
+    }
+  }
+  else{
+    *max =  pow(2, (sizeof(off_t) * 8) - 2);
+    if(sscanf(arg, "%ld", min) < 1){
+      fprintf(stderr, "%s", err_invalid_argument);
+      exit(1);
+    }
+  }
+}
