@@ -6,11 +6,13 @@ SRC = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
 DEPS = $(wildcard $(INCDIR)/*.h)
 CLEAN = rm -f
+CLEANDIR = rm -fd
+MKDIR = mkdir -p
 OUT = filestat
 CCFLAGS = -I ./$(INCDIR) -Wall -D_FILE_OFFSET_BITS=64
 
 
-all: $(OUT)
+all: $(OBJDIR) $(OUT)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS)
 	$(CC) -c -g -o $@ $< $(CCFLAGS)
@@ -18,6 +20,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS)
 $(OUT): $(OBJS)
 	$(CC) -o $@ $^ $(CCFLAGS)
 
+$(OBJDIR):
+	$(MKDIR) $(OBJDIR)
+
 clean:
 	$(CLEAN) $(OBJDIR)/*.o
 	$(CLEAN) $(OUT)
+	$(CLEANDIR) $(OBJDIR)
