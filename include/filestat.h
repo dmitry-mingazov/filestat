@@ -7,7 +7,6 @@
 #include "structs.h"
 
 #include "filestatConf.h"
-#include "utils.h"
 #include "rbtree.h"
 #include "print.h"
 #include "rw_file.h"
