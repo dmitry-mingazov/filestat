@@ -1,6 +1,8 @@
 # filestat
 
-### Descritption
+This application was an assignment for Operating System exam, part of L-31 Bachelor Degree (Information Technology) in <a href="https://www.unicam.it">University of Camerino</a> in 2018
+
+### Description
 
 Develop a Unix/Linux system application called `filestat` which is capable of monitoring a set of files collecting info about\:
 - size (byte);  
